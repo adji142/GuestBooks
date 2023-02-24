@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="app_name">guestbook</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiYWRqaTE0MiIsImEiOiJjbGQwOGFxbTMwYTJ2M29xNTI5ODdtcmRlIn0.K-q7nmcgqsSvCTJe1EZwxw</string>
+</resources>
