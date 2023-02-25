@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:guestbook/page/master/kelompoktamu.dart';
-import 'package:guestbook/page/master/seat.dart';
-import 'package:guestbook/page/master/tamu.dart';
+import 'package:guestbook/page/master/kelompoktamu_page.dart';
+import 'package:guestbook/page/master/seat_page.dart';
+import 'package:guestbook/page/master/tamu_page.dart';
 import 'package:guestbook/shared/layoutdata.dart';
 import 'package:guestbook/shared/session.dart';
 import 'package:shared_preferences/shared_preferences.dart';

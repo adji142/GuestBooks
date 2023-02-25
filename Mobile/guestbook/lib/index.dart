@@ -45,6 +45,7 @@ class _IndexState extends State<Index> {
       _session.Email = account[2];
       _session.NamaUser = account[1]; 
       _session.KodeUser = account[0];
+      _session.RecordOwnerID = account[3];
       // isActive = true;
       // Updateing User Cart
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(_session)));
@@ -179,12 +180,13 @@ class _IndexState extends State<Index> {
                           if(value["success"].toString() == "true"){
                             print("Simpan Object, Masuk Halaman Selanjutnya");
                             // print(value);
-                            savePrev(value["data"]["id"].toString()+"|"+value["data"]["name"].toString()+"|"+value["data"]["email"].toString());
+                            savePrev(value["data"]["id"].toString()+"|"+value["data"]["name"].toString()+"|"+value["data"]["email"].toString()+"|"+value["data"]["RecordOwnerID"].toString());
 
                             setState(() {
                               _session.KodeUser = value["data"]["id"].toString();
                               _session.NamaUser = value["data"]["name"].toString();
                               _session.Email = value["data"]["email"].toString();
+                              _session.RecordOwnerID = value["data"]["RecordOwnerID"].toString();
                             });
                             Navigator.of(context,rootNavigator: true).pop();
 

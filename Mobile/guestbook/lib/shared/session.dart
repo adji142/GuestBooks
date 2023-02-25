@@ -6,4 +6,5 @@ class Session{
   String NamaUser = "";
   String Email = "";
   String Token = "";
+  String RecordOwnerID = "";
 }
