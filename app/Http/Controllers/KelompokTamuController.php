@@ -15,21 +15,21 @@ class KelompokTamuController extends Controller
         $return = $temp->DefaultMessage();
         $sError = "";
 
-        $validator = Validator::make($request->all(), [
-            'KodeKelompok' => 'required|max:15',
-            'NamaKelompok' => 'required|max:55',
-            'KodeSeat' => 'required',
-            'RecordOwnerID' => 'required',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'KodeKelompok' => 'required|max:15',
+        //     'NamaKelompok' => 'required|max:55',
+        //     'KodeSeat' => 'required',
+        //     'RecordOwnerID' => 'required',
+        // ]);
 
-        if($validator->fails()){
-            // return response()->json($validator->errors()->toJson(), 400);
-            $return['success'] = false;
-            $return['nError'] = 400;
-            $return['sError'] = response()->json($validator->errors()->toJson());
+        // if($validator->fails()){
+        //     // return response()->json($validator->errors()->toJson(), 400);
+        //     $return['success'] = false;
+        //     $return['nError'] = 400;
+        //     $return['sError'] = response()->json($validator->errors()->toJson());
 
-            return response()->json($return);
-        }
+        //     return response()->json($return);
+        // }
 
         try {
             $KelompokTamuModels = new KelompokTamuModels();
@@ -43,7 +43,7 @@ class KelompokTamuController extends Controller
                 'RecordOwnerID' => $request->input('RecordOwnerID')
             ];
 
-            $save = $KelompokTamuModels->storeData($formmode, $KodeKelompok, $data);
+            $save = $KelompokTamuModels->storeData($formmode, $KodeKelompok, $data, $request->input('RecordOwnerID'));
 
             if ($save) {
                 $sError = 'OK';

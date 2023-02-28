@@ -5,8 +5,9 @@ class Lookup extends StatefulWidget {
 
   final String title;
   final dynamic datamodel;
+  final Map ? parameter;
 
-  Lookup({required this.title, this.datamodel});
+  Lookup({required this.title, this.datamodel, this.parameter});
   
   @override
   _LookupState createState() => _LookupState();
@@ -21,6 +22,13 @@ class _LookupState extends State<Lookup> {
 
   @override
   Widget build(BuildContext context) {
+    // if (this.widget.parameter!["kriteria"])
+    // bool kriteriaExist = this.widget.parameter!.containsKey("kriteria");
+
+    // if(!kriteriaExist){
+
+    // }
+
     return Scaffold(
       appBar: AppBar(
             title: _searchWidget(),
@@ -45,27 +53,28 @@ class _LookupState extends State<Lookup> {
       ),
       body: Container(
               child: FutureBuilder(
-                future: this.widget.datamodel.getLookup(search: this._searchText.text, short: this._short),
-                builder: (context,AsyncSnapshot<List> snapshot) {
+                future: this.widget.datamodel.getLookup(this.widget.parameter),
+                builder: (context,AsyncSnapshot<Map> snapshot) {
                   if (snapshot.hasError) print(snapshot.error);
                   return snapshot.hasData
                       ? RefreshIndicator(
                           onRefresh: ()=> _refreshData(),
                           child: ListView.builder(
-                            itemCount: snapshot.data == null ? 0 :snapshot.data!.length,
+                            itemCount: snapshot.data == null ? 0 :snapshot.data!["data"].length,
                             itemBuilder: (context, index) {
                               return Card(
                                 child: ListTile(
                                   //leading: Icon(Icons.check_circle_outline, color: Theme.of(context).primaryColor,),
-                                  title: Text(snapshot.data![index]['Title'],  style: TextStyle(
+                                  title: Text(snapshot.data!["data"][index]['Title'],  style: TextStyle(
                                                                                     color: Theme.of(context).primaryColorDark,
                                                                                     fontWeight:FontWeight.bold
                                                                                     ),
                                   ),
+                                  subtitle: Text(snapshot.data!["data"][index]["ID"]),
                                   onTap: (){
                                     Navigator.pop(context, {
-                                      "ID" : snapshot.data![index]['ID'],
-                                      "Title" : snapshot.data![index]['Title']
+                                      "ID" : snapshot.data!["data"][index]['ID'],
+                                      "Title" : snapshot.data!["data"][index]['Title']
                                     });
                                   },
                                 ),
@@ -96,7 +105,9 @@ class _LookupState extends State<Lookup> {
               autofocus: true,
               decoration: InputDecoration.collapsed(hintText: "Cari Data"),
               textInputAction: TextInputAction.search,
-              onChanged: (value) => setState((){})
+              onChanged: (value) => setState((){
+                this.widget.parameter!.putIfAbsent("kriteria", ()=>_searchText.text);
+              })
             ),
           )
         )

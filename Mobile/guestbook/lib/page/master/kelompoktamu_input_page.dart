@@ -1,61 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:guestbook/model/kelompoktamu.dart';
 import 'package:guestbook/model/seat.dart';
+import 'package:guestbook/page/master/kelompoktamu_page.dart';
 import 'package:guestbook/shared/dialog.dart';
 import 'package:guestbook/shared/inputdata.dart';
+import 'package:guestbook/shared/lookup.dart';
 import 'package:guestbook/shared/session.dart';
 
-class SeatInputPage extends StatefulWidget{
+class KelompokInputPage extends StatefulWidget{
   final Session ? session;
-  final String ? kodeSeat;
-  SeatInputPage(this.session,{this.kodeSeat});
+  final String ? kodeKelompok;
+  KelompokInputPage(this.session,{this.kodeKelompok});
 
   @override
-  _seatInputState createState() => _seatInputState();
+  _kelompokInputState createState() => _kelompokInputState();
 }
-
-class _seatInputState extends State<SeatInputPage>{
+class _kelompokInputState extends State<KelompokInputPage>{
   final GlobalKey<State> _keyLoader = new GlobalKey<State>();
 
-  String ? _kodeSeat = "";
-  String ? _namaSeat = "";
-  String ? _area = "";
-
-  List ? _dataSeat;
-
+  List ? _dataSet;
   bool valid = false;
 
-  Future<Map> _getData(String KodeSeat) async{
+  String ? _kodeKelompok = "";
+  String ? _namaKelompok = "";
+  String ? _kodeSeat = "";
+  String ? _namaSeat = "";
+  
+  Future<Map> _getData(String KodeKelompok) async{
     Map Parameter(){
       return {
-        "KodeSeat"      : KodeSeat,
+        "KodeKelompok"  : KodeKelompok,
         "RecordOwnerID" : this.widget.session!.RecordOwnerID.toString(),
         "Kriteria"      : ""
       };
     }
-    var temp = await SeatModels(this.widget.session).read(Parameter());
+    var temp = await KelompokTamuModels(this.widget.session).read(Parameter());
     return temp;
   }
 
-  _fetchData(String KodeSeat) async{
-    var temp = await _getData(KodeSeat);
-    _dataSeat = temp["data"].toList();
-    _kodeSeat = _dataSeat![0]["KodeSeat"];
-    _namaSeat = _dataSeat![0]["NamaSeat"];
-    _area = _dataSeat![0]["Area"];
+  _fetchData(String KodeKelompok) async{
+    var temp = await _getData(KodeKelompok);
+    _dataSet = temp["data"].toList();
+    _kodeKelompok = _dataSet![0]["KodeKelompok"];
+    _namaKelompok = _dataSet![0]["NamaKelompok"];
+    _kodeSeat = _dataSet![0]["KodeSeat"];
+    _namaSeat = _dataSet![0]["NamaSeat"];
     setState(() => {});
   }
 
-  @override
-
   void initState(){
-    if(this.widget.kodeSeat == ""){
+    if(this.widget.kodeKelompok == ""){
+      _kodeKelompok = "";
+      _namaKelompok = "";
       _kodeSeat = "";
       _namaSeat = "";
-      _area = "";
-      _dataSeat = null;
+      _dataSet = null;
     }
     else{
-      _fetchData(this.widget.kodeSeat.toString());
+      _fetchData(this.widget.kodeKelompok.toString());
     }
     super.initState();
   }
@@ -63,7 +65,8 @@ class _seatInputState extends State<SeatInputPage>{
   bool setEnablecommand(){
     valid = _kodeSeat.toString() != "" &&
             _namaSeat !="" &&
-            _area != "";
+            _kodeKelompok != ""&&
+            _namaKelompok != "";
 
     return valid;
   }
@@ -72,13 +75,13 @@ class _seatInputState extends State<SeatInputPage>{
     // print("data click");
     showLoadingDialog(context, _keyLoader,info: "Processing");
 
-    var oSave = new SeatModels(this.widget.session);
+    var oSave = new KelompokTamuModels(this.widget.session);
     Map oParam(){
       return {
-        "formmode"      : _dataSeat == null ? "add" : "edit",
-        "KodeSeat"      : _kodeSeat,
-        "NamaSeat"      : _namaSeat,
-        "Area"          : _area,
+        "formmode"      : _dataSet == null ? "add" : "edit",
+        "KodeKelompok"      : _kodeKelompok,
+        "NamaKelompok"      : _namaKelompok,
+        "KodeSeat"          : _kodeSeat,
         "RecordOwnerID" : this.widget.session!.RecordOwnerID
       };
     }
@@ -96,6 +99,7 @@ class _seatInputState extends State<SeatInputPage>{
       
     });
   }
+
   @override 
   Widget build(BuildContext contex){
     var width = MediaQuery.of(context).size.width / 100;
@@ -103,12 +107,11 @@ class _seatInputState extends State<SeatInputPage>{
 
     return Scaffold(
       appBar: AppBar(
-        title: _dataSeat== null ? Text("Data Kursi | ** Add **") : Text("Data Kursi | ** Edit **"),
+        title: _dataSet== null ? Text("Data Kelompok Tamu | ** Add **") : Text("Data Kelompok Tamu | ** Edit **"),
       ),
       body: _formInput(),
     );
   }
-
   Widget _inputDataString({required String title, 
                     required String label,                    
                     dynamic dataField, 
@@ -140,67 +143,84 @@ class _seatInputState extends State<SeatInputPage>{
   Widget _formInput(){
     return ListView(
       children: [
-        _widgetKodeSeat(),
-        _widgetNamaSeat(),
-        _widgetArea(),
+        _widgetKodeKelompok(),
+        _widgetNamaKelompok(),
+        _WidgetSeat(),
         _WidgetsimpanData()
       ],
     );
   }
 
-  Widget _widgetKodeSeat() {
+  Widget _widgetKodeKelompok() {
     return ExpansionTile( 
       initiallyExpanded: true,
       leading: CircleAvatar(child: Text("1")),
-      title: Text("Kode Seat", style: TextStyle(color: Theme.of(context).primaryColorDark),),
+      title: Text("Kode Kelompok Tamu", style: TextStyle(color: Theme.of(context).primaryColorDark),),
       children: <Widget>[
         _inputDataString(
-            title:"Kode Seat", 
-            label:"Kode Seat", 
-            dataField:this._kodeSeat == "" ? "-" : this._kodeSeat, 
+            title:"Kode Kelompok Tamu", 
+            label:"Kode Kelompok Tamu", 
+            dataField:this._kodeKelompok == "" ? "-" : this._kodeKelompok, 
             description:"", 
             maxlen:1,
-            isEdit: _dataSeat==null ? false : true,
-            onChange: (v) => setState( () => this._kodeSeat = v)
+            isEdit: _dataSet==null ? false : true,
+            onChange: (v) => setState( () => this._kodeKelompok = v)
         ),
       ],
     );
   }
 
-  Widget _widgetNamaSeat() {
+  Widget _widgetNamaKelompok() {
     return ExpansionTile( 
       initiallyExpanded: true,
       leading: CircleAvatar(child: Text("2")),
-      title: Text("Nama Seat", style: TextStyle(color: Theme.of(context).primaryColorDark),),
+      title: Text("Nama Kelompok Tamu", style: TextStyle(color: Theme.of(context).primaryColorDark),),
       children: <Widget>[
         _inputDataString(
-            title:"Nama Seat", 
-            label:"Nama Seat", 
-            dataField:this._namaSeat == "" ? "-" : this._namaSeat, 
+            title:"Nama Kelompok Tamu", 
+            label:"Nama Kelompok Tamu", 
+            dataField:this._namaKelompok == "" ? "-" : this._namaKelompok, 
             description:"", 
             maxlen:1,
             isEdit: false,
-            onChange: (v) => setState( () => this._namaSeat = v)
+            onChange: (v) => setState( () => this._namaKelompok = v)
         ),
       ],
     );
   }
 
-  Widget _widgetArea() {
-    return ExpansionTile( 
-      initiallyExpanded: true,
+  Widget _WidgetSeat(){
+    return ListTile(
       leading: CircleAvatar(child: Text("3")),
-      title: Text("Area", style: TextStyle(color: Theme.of(context).primaryColorDark),),
-      children: <Widget>[
-        _inputDataString(
-            title:"Area", 
-            label:"Area", 
-            dataField:this._area == "" ? "-" : this._area, 
-            description:"", 
-            maxlen:1,
-            onChange: (v) => setState( () => this._area = v)
-        ),
-      ],
+      title: Text("Grup", style: TextStyle(fontSize: 12, color: Theme.of(context).primaryColorDark),),
+      subtitle: _namaSeat == ""
+                ? Text("<PILIH TEMPAT DUDUK>", style: TextStyle(color: Colors.red))
+                : Text(_namaSeat!, style: TextStyle(fontSize: 32, color: Colors.black, fontWeight: FontWeight.bold),),
+      trailing: Icon(Icons.keyboard_arrow_right, color: Theme.of(context).primaryColor,),
+      onTap: () async{
+        Map parameter(){
+          return {
+            "RecordOwnerID" : this.widget.session!.RecordOwnerID
+          };
+        }
+        var result = await Navigator.push(context, 
+                            MaterialPageRoute(builder: (context) => Lookup(
+                              title: "Daftar Tempat Duduk", 
+                              datamodel: new SeatModels(widget.session),
+                              parameter: parameter(), )
+                          ),              
+                      );
+        
+        setState(() {
+            if(result != null) {
+              _kodeSeat = result["ID"];
+              _namaSeat = result["Title"];
+                //_fetchStandar(_kodeItemFG);
+            }
+            
+        });
+
+      },                
     );
   }
 

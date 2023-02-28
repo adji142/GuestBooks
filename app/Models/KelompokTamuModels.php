@@ -11,7 +11,7 @@ class KelompokTamuModels extends Model
     use HasFactory;
     protected $table = 'tkelompoktamu';
 
-    public function storeData($mode, $id, $data)
+    public function storeData($mode, $id, $data,$RecordOwnerID)
     {
         $created = [
                 'created_at' => date('Y-m-d H:i:s')
@@ -27,6 +27,16 @@ class KelompokTamuModels extends Model
                 $store = DB::table($this->table)->where('KodeKelompok', $id)->update(array_merge($data, $updated));
                 return $store;
             } catch (\Illuminate\Database\QueryException $ex) {
+                if($ex->getCode() === '23000') {
+                    return false;
+                }
+            }
+        } 
+        else if ($mode == 'delete') {
+            try {
+                $store = DB::table($this->table)->where('KodeKelompok', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
+                return $store;
+            } catch (Exception $e) {
                 if($ex->getCode() === '23000') {
                     return false;
                 }

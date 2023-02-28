@@ -11,7 +11,7 @@ class SeatModels extends Model
     use HasFactory;
     protected $table = 'tseat';
 
-    public function storeData($mode, $id, $data)
+    public function storeData($mode, $id, $data,$RecordOwnerID)
     {
         $created = [
                 'created_at' => date('Y-m-d H:i:s')
@@ -34,7 +34,7 @@ class SeatModels extends Model
         } 
         else if ($mode == 'delete') {
             try {
-                $store = DB::table($this->table)->where('KodeSeat', $id)->delete();
+                $store = DB::table($this->table)->where('KodeSeat', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
                 return $store;
             } catch (Exception $e) {
                 if($ex->getCode() === '23000') {

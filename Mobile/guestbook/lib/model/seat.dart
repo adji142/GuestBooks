@@ -38,4 +38,11 @@ class SeatModels{
       return error;
     }
   }
+
+  Future<Map> getLookup(Map Parameter) async {
+      var url = Uri.parse('${this.url}/seatlookup');
+      final response = await http.post(url, body: Parameter);
+      // List temp = response.body["data"].toList();
+      return json.decode(response.body);
+  }
 }

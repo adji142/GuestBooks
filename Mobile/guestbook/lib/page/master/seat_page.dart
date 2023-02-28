@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:guestbook/model/seat.dart';
 import 'package:guestbook/page/master/seat_input_page.dart';
+import 'package:guestbook/shared/dialog.dart';
 import 'dart:async';
 import 'package:guestbook/shared/layoutdata.dart';
 import 'package:guestbook/shared/session.dart';
@@ -17,7 +18,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
   bool _searchMode = true;
   Icon _appIcon = Icon(Icons.search, size: 32.0,);
   TextEditingController _searchText = TextEditingController();
-
+  final GlobalKey<State> _keyLoader = new GlobalKey<State>();
   @override
   void initState() {
     super.initState();
@@ -94,6 +95,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
         builder: (context, AsyncSnapshot<Map> snapshot){
           // print(snapshot.data);
           if(snapshot.hasData){
+            // Navigator.of(context,rootNavigator: true).pop();
             return RefreshIndicator(
               onRefresh: _refreshData,
               child: ListView.builder(
@@ -102,7 +104,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
-                        child: Text((index + 1).toString()),
+                        child: Text(snapshot.data!["data"][index]["Area"]),
                       ),
                       title: Text(
                         snapshot.data!["data"][index]["NamaSeat"],
@@ -113,11 +115,44 @@ class _SeatMasterState extends State<SeatMasterPage> {
                         ),
                       ),
                       subtitle: Text(snapshot.data!["data"][index]["KodeSeat"]),
-                      trailing: Text(
-                        snapshot.data!["data"][index]["Area"],
-                        style: TextStyle(
-                          color: Colors.red
-                        ),
+                      trailing: GestureDetector(
+                        child: Icon(Icons.delete),
+                        onTap: ()async{
+                          bool _konfirmasiSimpam =  await messageDialog(
+                              context: context,
+                              title: "Konfirmasi",
+                              message: "Delete Data ini ?"
+                          );
+
+                          if(_konfirmasiSimpam){
+                            showLoadingDialog(context, _keyLoader,info: "Processing");
+
+                            var oSave = new SeatModels(this.widget.session);
+                            Map oParam(){
+                              return {
+                                "formmode"      : "delete",
+                                "KodeSeat"      : snapshot.data!["data"][index]["KodeSeat"],
+                                "RecordOwnerID" : this.widget.session!.RecordOwnerID
+                              };
+                            }
+
+                            oSave.crud(oParam()).then((value) async{
+                              if(value["success"].toString() == "true"){
+                                Navigator.of(context,rootNavigator: false).pop();
+                                await messageBox(context: context,title: "Informasi",message: "Data Berhasil Dihapus");
+                                setState(() {
+                                  
+                                });
+                              }
+                              else{
+                                Navigator.of(context,rootNavigator: false).pop();
+                                await messageBox(context: context,title: "Error",message: "Error : " + value["nError"].toString() + " / " + value["sError"]);
+                              }
+                              
+                            });
+                          }
+                          
+                        },
                       ),
                       onTap: ()async{
                         var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeatInputPage(this.widget.session,kodeSeat: snapshot.data!["data"][index]["KodeSeat"],) )).then((value) {
@@ -130,7 +165,26 @@ class _SeatMasterState extends State<SeatMasterPage> {
               ), 
             );
           }
-          return Text("data");
+          else{
+            return Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 25,
+                        height: 25,
+                        child: CircularProgressIndicator(),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          }
+          // return Text("data");
         }
       )
     );

@@ -15,23 +15,23 @@ class TamuController extends Controller
         $return = $temp->DefaultMessage();
         $sError = "";
 
-        $validator = Validator::make($request->all(), [
-            'KodeTamu' => 'required|max:15',
-            'NamaTamu' => 'required|max:55',
-            'KelompokTamu' => 'required',
-            'JumlahUndangan' => 'required',
-            'AlamatTamu' => 'required',
-            'RecordOwnerID' => 'required',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'KodeTamu' => 'required|max:15',
+        //     'NamaTamu' => 'required|max:55',
+        //     'KelompokTamu' => 'required',
+        //     'JumlahUndangan' => 'required',
+        //     'AlamatTamu' => 'required',
+        //     'RecordOwnerID' => 'required',
+        // ]);
 
-        if($validator->fails()){
-            // return response()->json($validator->errors()->toJson(), 400);
-            $return['success'] = false;
-            $return['nError'] = 400;
-            $return['sError'] = response()->json($validator->errors()->toJson());
+        // if($validator->fails()){
+        //     // return response()->json($validator->errors()->toJson(), 400);
+        //     $return['success'] = false;
+        //     $return['nError'] = 400;
+        //     $return['sError'] = response()->json($validator->errors()->toJson());
 
-            return response()->json($return);
-        }
+        //     return response()->json($return);
+        // }
 
         try {
             $TamuModels = new TamuModels();

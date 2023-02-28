@@ -62,6 +62,7 @@ Route::group([
     // Seat
     Route::post('/seatcrud', [SeatController::class, 'CRUD']);
     Route::post('/seatread', [SeatController::class, 'Read']);
+    Route::post('/seatlookup', [SeatController::class, 'GetLookup']);
     // Kelompok Tamu
     Route::post('/kelompoktamucrud', [KelompokTamuController::class, 'CRUD']);
     Route::post('/kelompoktamuread', [KelompokTamuController::class, 'Read']);

@@ -16,21 +16,21 @@ class SeatController extends Controller
         $return = $temp->DefaultMessage();
         $sError = "";
 
-        $validator = Validator::make($request->all(), [
-            'KodeSeat' => 'required|max:15',
-            'NamaSeat' => 'required|max:55',
-            'Area' => 'required',
-            'RecordOwnerID' => 'required',
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'KodeSeat' => 'required|max:15',
+        //     'NamaSeat' => 'required|max:55',
+        //     'Area' => 'required',
+        //     'RecordOwnerID' => 'required',
+        // ]);
 
-        if($validator->fails()){
-            // return response()->json($validator->errors()->toJson(), 400);
-            $return['success'] = false;
-            $return['nError'] = 400;
-            $return['sError'] = response()->json($validator->errors()->toJson());
+        // if($validator->fails() && $request->input('formmode') != 'delete' ){
+        //     // return response()->json($validator->errors()->toJson(), 400);
+        //     $return['success'] = false;
+        //     $return['nError'] = 400;
+        //     $return['sError'] = response()->json($validator->errors()->toJson());
 
-            return response()->json($return);
-        }
+        //     return response()->json($return);
+        // }
 
         try {
             $SeatModels = new SeatModels();
@@ -44,7 +44,7 @@ class SeatController extends Controller
                 'RecordOwnerID' => $request->input('RecordOwnerID')
             ];
 
-            $save = $SeatModels->storeData($formmode, $KodeSeat, $data);
+            $save = $SeatModels->storeData($formmode, $KodeSeat, $data,$request->input('RecordOwnerID'));
 
             if ($save) {
                 $sError = 'OK';
@@ -70,6 +70,26 @@ class SeatController extends Controller
 
             DB::rollback();
         }
+
+        return response()->json($return);
+    }
+
+    public function GetLookup(Request $request)
+    {
+        $temp = new MessageDefault;
+        $return = $temp->DefaultMessage();
+        $sError = "";
+
+        $RecordOwnerID = $request->input('RecordOwnerID');
+        $Kriteria = $request->input('Kriteria');
+
+        $result = DB::table('tseat as a')
+                ->select(DB::raw('a.KodeSeat AS ID, a.NamaSeat AS Title'))
+                ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('NamaSeat','LIKE','%'.$Kriteria.'%')
+                ->get();
+
+        $return['data'] = $result->toArray();
 
         return response()->json($return);
     }
