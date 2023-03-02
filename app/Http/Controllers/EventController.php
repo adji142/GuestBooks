@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
-use App\Models\TamuModels;
-class TamuController extends Controller
+use App\Models\EventModels;
+
+class EventController extends Controller
 {
     public function CRUD(Request $request){
         $temp = new MessageDefault;
@@ -34,21 +35,19 @@ class TamuController extends Controller
         // }
 
         try {
-            $TamuModels = new TamuModels();
+            $EventModels = new EventModels();
             $formmode = $request->input('formmode');
-            $KodeTamu = $request->input('KodeTamu');
+            $KodeEvent = $request->input('KodeEvent');
 
             $data = [
-                'KodeTamu' => $KodeTamu,
-                'NamaTamu' => $request->input('NamaTamu'),
-                'KelompokTamu' => $request->input('KelompokTamu'),
-                'JumlahUndangan' => $request->input('JumlahUndangan'),
-                'AlamatTamu' => $request->input('AlamatTamu'),
-                'RecordOwnerID' => $request->input('RecordOwnerID'),
-                'EventID' => $request->input('EventID')
+                'KodeEvent' => $KodeEvent,
+                'NamaEvent' => $request->input('NamaEvent'),
+                'DeskripsiEvent' => $request->input('DeskripsiEvent'),
+                'EstimasiUndangan' => $request->input('EstimasiUndangan'),
+                'RecordOwnerID' => $request->input('RecordOwnerID')
             ];
 
-            $save = $TamuModels->storeData($formmode, $KodeTamu, $data,$request->input('RecordOwnerID'));
+            $save = $EventModels->storeData($formmode, $KodeEvent, $data,$request->input('RecordOwnerID'));
 
             if ($save) {
                 $sError = 'OK';
@@ -84,25 +83,37 @@ class TamuController extends Controller
         $return = $temp->DefaultMessage();
         $sError = "";
 
-        $KodeTamu = $request->input('KodeTamu');
+        $KodeEvent = $request->input('KodeEvent');
         $RecordOwnerID = $request->input('RecordOwnerID');
         $Kriteria = $request->input('Kriteria');
 
-        if ($KodeTamu != '') {
-            $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,ttamu.KelompokTamu,tkelompoktamu.NamaKelompok'))
-                ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
-                ->where('ttamu.RecordOwnerID',$RecordOwnerID)
-                ->where('ttamu.KodeTamu',$KodeTamu)
-                ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
+        if ($KodeEvent != '') {
+            $result = DB::table('tevent')
+                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan, COALESCE(COUNT(ttamu.EventID),0) AS JumlahTamu'))
+                ->leftjoin('ttamu',function ($join)
+                {
+                	$join->on('ttamu.EventID','=','tevent.KodeEvent')
+                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID')
+                })
+                ->where('tevent.RecordOwnerID',$RecordOwnerID)
+                ->where('tevent.KodeEvent',$KodeTamu)
+                ->where('tevent.NamaEnvent','LIKE','%'.$Kriteria.'%')
+                ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
+                ->groupby('tevent.KodeEvent')
                 ->get();
         }
         else{
-            $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,tkelompoktamu.NamaKelompok'))
-                ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
-                ->where('ttamu.RecordOwnerID',$RecordOwnerID)
-                ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
+            $result = DB::table('tevent')
+                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan, COALESCE(COUNT(ttamu.EventID),0) AS JumlahTamu'))
+                ->leftjoin('ttamu',function ($join)
+                {
+                	$join->on('ttamu.EventID','=','tevent.KodeEvent')
+                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID')
+                })
+                ->where('tevent.RecordOwnerID',$RecordOwnerID)
+                ->where('tevent.NamaEnvent','LIKE','%'.$Kriteria.'%')
+                ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
+                ->groupby('tevent.KodeEvent')
                 ->get();
         }
 

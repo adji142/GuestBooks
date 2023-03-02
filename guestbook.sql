@@ -11,9 +11,7 @@
  Target Server Version : 100240
  File Encoding         : 65001
 
- github token : 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
-
- Date: 02/03/2023 11:46:16
+ Date: 02/03/2023 15:55:55
 */
 
 SET NAMES utf8mb4;

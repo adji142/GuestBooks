@@ -12,6 +12,6 @@ class MessageDefault extends Model
     public function DefaultMessage()
     {
         // return response()->json(['success'=>false,'nError'=>0,'sError'=> ''], 400);
-        return array('success'=>false,'nError'=>0,'sError'=> '', 'data'=>array(),'token'=>'');
+        return array('success'=>false,'nError'=>0,'sError'=> '', 'data'=>array(),'token'=>'', 'RecordCount'=>0);
     }
 }

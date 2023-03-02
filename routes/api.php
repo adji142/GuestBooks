@@ -6,6 +6,7 @@ use App\Http\Controllers\DemografiController;
 use App\Http\Controllers\SeatController;
 use App\Http\Controllers\KelompokTamuController;
 use App\Http\Controllers\TamuController;
+use App\Http\Controllers\EventController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -70,4 +71,7 @@ Route::group([
     // Kelompok Tamu
     Route::post('/tamucrud', [TamuController::class, 'CRUD']);
     Route::post('/tamuread', [TamuController::class, 'Read']);
+    // Event Tamu
+    Route::post('/eventcrud', [EventController::class, 'CRUD']);
+    Route::post('/eventread', [EventController::class, 'Read']);
 });
