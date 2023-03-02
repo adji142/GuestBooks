@@ -53,7 +53,7 @@ class TamuController extends Controller
                 $sError = 'OK';
             }
             else{
-                $sError = 'Gagal Store Data Seat';
+                $sError = 'Gagal Store Data Tamu';
             }
         } catch (Exception $e) {
             $sError = 'Error : '.$e->getMessage();
@@ -89,7 +89,7 @@ class TamuController extends Controller
 
         if ($KodeTamu != '') {
             $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,tkelompoktamu.NamaKelompok'))
+                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,ttamu.KelompokTamu,tkelompoktamu.NamaKelompok'))
                 ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->where('ttamu.RecordOwnerID',$RecordOwnerID)
                 ->where('ttamu.KodeTamu',$KodeTamu)

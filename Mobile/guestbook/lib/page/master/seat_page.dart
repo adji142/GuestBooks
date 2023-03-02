@@ -3,7 +3,6 @@ import 'package:guestbook/model/seat.dart';
 import 'package:guestbook/page/master/seat_input_page.dart';
 import 'package:guestbook/shared/dialog.dart';
 import 'dart:async';
-import 'package:guestbook/shared/layoutdata.dart';
 import 'package:guestbook/shared/session.dart';
 
 class SeatMasterPage extends StatefulWidget {
@@ -81,7 +80,6 @@ class _SeatMasterState extends State<SeatMasterPage> {
   }
 
   Widget _loadData(){
-    print("object data");
     Map Parameter(){
       return {
         "KodeSeat"      : "",

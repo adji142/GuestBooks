@@ -2,7 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 
-Future inputNumeric({required  context, String title="Input Data", String label="", String description = "",required double data,String uom=""}) async {
+Future inputNumeric({required  context, String title="Input Data", String label="", String description = "",required int data,String uom=""}) async {
 
     TextEditingController _input = TextEditingController();
 
@@ -55,7 +55,7 @@ Future inputNumeric({required  context, String title="Input Data", String label=
             ElevatedButton(
               child: Text('Proses'),
               onPressed: () {
-                Navigator.of(context).pop(double.parse(_input.text));
+                Navigator.of(context).pop(int.parse(_input.text));
               },
             ),
             ElevatedButton(
@@ -70,13 +70,12 @@ Future inputNumeric({required  context, String title="Input Data", String label=
     );
  }
 
- Future inputNumericEx({required BuildContext context, String title="Input Data", String label="", String labelEx="", String description = "",required double data,required String dataEx, String uom=""}) async {
+ Future inputNumericEx({required BuildContext context, String title="Input Data", String label="", String labelEx="", String description = "",required int data, String uom=""}) async {
 
     TextEditingController _input = TextEditingController();
     TextEditingController _inputEx = TextEditingController();
 
     _input.text = data == 0.0 ? "" : data.toString();
-    _inputEx.text = dataEx.toString();
 
     return showDialog<void>(
       context: context,

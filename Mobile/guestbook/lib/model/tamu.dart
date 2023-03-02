@@ -3,15 +3,15 @@ import 'dart:convert';
 
 import 'package:guestbook/shared/session.dart';
 
-class TamuModels{
-  Session ? sess;
-  String ? url;
+class TamuModels {
+  Session? sess;
+  String? url;
 
   TamuModels(this.sess) {
-    url="http://${sess!.server}/mstr";
+    url = "http://${sess!.server}/mstr";
   }
 
-  Future<Map> read(Map Parameter) async{
+  Future<Map> read(Map Parameter) async {
     try {
       // print(Parameter);
       // print(this.url);
@@ -26,7 +26,7 @@ class TamuModels{
     }
   }
 
-  Future<Map> crud(Map Parameter) async{
+  Future<Map> crud(Map Parameter) async {
     try {
       var url = Uri.parse('${this.url}/tamucrud');
       final response = await http.post(url, body: Parameter);

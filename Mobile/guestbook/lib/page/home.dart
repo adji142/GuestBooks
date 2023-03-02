@@ -25,7 +25,7 @@ class _HomeState extends State<HomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Title"),
+        title: Text("Guest Books"),
       ),
       drawer: Drawer(
         child: ListView(

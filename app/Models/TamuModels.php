@@ -31,7 +31,16 @@ class TamuModels extends Model
                     return false;
                 }
             }
-        } else {
+        } else if ($mode == 'delete') {
+            try {
+                $store = DB::table($this->table)->where('KodeTamu', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
+                return $store;
+            } catch (Exception $e) {
+                if($ex->getCode() === '23000') {
+                    return false;
+                }
+            }
+        }else {
             return false;
         }
     }
