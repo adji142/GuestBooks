@@ -99,7 +99,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
             return RefreshIndicator(
               onRefresh: _refreshData,
               child: ListView.builder(
-                itemCount: snapshot.data == null ? 0 : snapshot.data!["data"].length,
+                itemCount: snapshot.data!.length == 0 ? 0 : snapshot.data!["data"].length,
                 itemBuilder: (context, index){
                   return Card(
                     child: ListTile(

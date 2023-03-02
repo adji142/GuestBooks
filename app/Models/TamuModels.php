@@ -11,7 +11,7 @@ class TamuModels extends Model
     use HasFactory;
     protected $table = 'ttamu';
 
-    public function storeData($mode, $id, $data)
+    public function storeData($mode, $id, $data,$RecordOwnerID)
     {
         $created = [
                 'created_at' => date('Y-m-d H:i:s')

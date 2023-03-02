@@ -52,41 +52,41 @@ class _LookupState extends State<Lookup> {
             ],
       ),
       body: Container(
-              child: FutureBuilder(
-                future: this.widget.datamodel.getLookup(this.widget.parameter),
-                builder: (context,AsyncSnapshot<Map> snapshot) {
-                  if (snapshot.hasError) print(snapshot.error);
-                  return snapshot.hasData
-                      ? RefreshIndicator(
-                          onRefresh: ()=> _refreshData(),
-                          child: ListView.builder(
-                            itemCount: snapshot.data == null ? 0 :snapshot.data!["data"].length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: ListTile(
-                                  //leading: Icon(Icons.check_circle_outline, color: Theme.of(context).primaryColor,),
-                                  title: Text(snapshot.data!["data"][index]['Title'],  style: TextStyle(
-                                                                                    color: Theme.of(context).primaryColorDark,
-                                                                                    fontWeight:FontWeight.bold
-                                                                                    ),
-                                  ),
-                                  subtitle: Text(snapshot.data!["data"][index]["ID"]),
-                                  onTap: (){
-                                    Navigator.pop(context, {
-                                      "ID" : snapshot.data!["data"][index]['ID'],
-                                      "Title" : snapshot.data!["data"][index]['Title']
-                                    });
-                                  },
-                                ),
-                              );
-                            }
+        child: FutureBuilder(
+          future: this.widget.datamodel.getLookup(this.widget.parameter),
+          builder: (context,AsyncSnapshot<Map> snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+            return snapshot.hasData
+                ? RefreshIndicator(
+                    onRefresh: ()=> _refreshData(),
+                    child: ListView.builder(
+                      itemCount: snapshot.data == null ? 0 :snapshot.data!["data"].length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            //leading: Icon(Icons.check_circle_outline, color: Theme.of(context).primaryColor,),
+                            title: Text(snapshot.data!["data"][index]['Title'],  style: TextStyle(
+                                                                              color: Theme.of(context).primaryColorDark,
+                                                                              fontWeight:FontWeight.bold
+                                                                              ),
+                            ),
+                            subtitle: Text(snapshot.data!["data"][index]["ID"]),
+                            onTap: (){
+                              Navigator.pop(context, {
+                                "ID" : snapshot.data!["data"][index]['ID'],
+                                "Title" : snapshot.data!["data"][index]['Title']
+                              });
+                            },
                           ),
-                        )
-                      : new Center(
-                            child: new CircularProgressIndicator(),
                         );
-                },
-              )
+                      }
+                    ),
+                  )
+                : new Center(
+                      child: new CircularProgressIndicator(),
+                  );
+          },
+        )
       ),
     );
   }

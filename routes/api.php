@@ -66,6 +66,7 @@ Route::group([
     // Kelompok Tamu
     Route::post('/kelompoktamucrud', [KelompokTamuController::class, 'CRUD']);
     Route::post('/kelompoktamuread', [KelompokTamuController::class, 'Read']);
+    Route::post('/kelompoktamulookup', [KelompokTamuController::class, 'GetLookup']);
     // Kelompok Tamu
     Route::post('/tamucrud', [TamuController::class, 'CRUD']);
     Route::post('/tamuread', [TamuController::class, 'Read']);

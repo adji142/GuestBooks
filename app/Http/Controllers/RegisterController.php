@@ -24,7 +24,7 @@ class RegisterController extends Controller
             'CompanyName' => 'required|string|max:255',
             'PICName' => 'required|string|max:255',
             'Email' => 'required|string|Email|max:255|unique:tcompany',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
         ]);
 
         if($validator->fails()){
@@ -61,6 +61,7 @@ class RegisterController extends Controller
                     'name' => $request->input('PICName'),
                     'email' => $request->input('Email'),
                     'password' => Hash::make($request->input('password')),
+                    'RecordOwnerID' => $request->input('id')
                 ]);
 
                 if ($user) {

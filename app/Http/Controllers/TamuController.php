@@ -47,7 +47,7 @@ class TamuController extends Controller
                 'RecordOwnerID' => $request->input('RecordOwnerID')
             ];
 
-            $save = $TamuModels->storeData($formmode, $KodeTamu, $data);
+            $save = $TamuModels->storeData($formmode, $KodeTamu, $data,$request->input('RecordOwnerID'));
 
             if ($save) {
                 $sError = 'OK';

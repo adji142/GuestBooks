@@ -73,6 +73,26 @@ class KelompokTamuController extends Controller
         return response()->json($return);
     }
 
+    public function GetLookup(Request $request)
+    {
+        $temp = new MessageDefault;
+        $return = $temp->DefaultMessage();
+        $sError = "";
+
+        $RecordOwnerID = $request->input('RecordOwnerID');
+        $Kriteria = $request->input('Kriteria');
+
+        $result = DB::table('tkelompoktamu as a')
+                ->select(DB::raw('a.KodeKelompok AS ID, a.NamaKelompok AS Title'))
+                ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('NamaKelompok','LIKE','%'.$Kriteria.'%')
+                ->get();
+
+        $return['data'] = $result->toArray();
+
+        return response()->json($return);
+    }
+
     public function Read(Request $request)
     {
         $temp = new MessageDefault;
