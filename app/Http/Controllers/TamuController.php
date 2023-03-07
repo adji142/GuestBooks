@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\TamuModels;
+use App\Models\GeneralModels();
+
 class TamuController extends Controller
 {
     public function CRUD(Request $request){
@@ -35,8 +37,31 @@ class TamuController extends Controller
 
         try {
             $TamuModels = new TamuModels();
+            $General = new GeneralModels();
+
             $formmode = $request->input('formmode');
             $KodeTamu = $request->input('KodeTamu');
+
+            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeTamu', $KodeTamu, 'ttamu')) {
+                $return['success'] = false;
+                $return['nError'] = 101;
+                $return['sError'] = "Kode ". $KodeTamu. " Sudah Dipakai! " ;
+                return response()->json($return);
+            }
+
+
+            if ($formmode == "delete") {
+                 $result = DB::table('bukutamu')
+                    ->where('KodeTamu',$KodeTamu)
+                    ->count();
+                if ($result > 0) {
+                    $return['success'] = false;
+                    $return['nError'] = 300;
+                    $return['sError'] = "Tamu sudah Check IN !" ;
+                    return response()->json($return);
+                }
+            }
+
 
             $data = [
                 'KodeTamu' => $KodeTamu,
@@ -86,6 +111,7 @@ class TamuController extends Controller
 
         $KodeTamu = $request->input('KodeTamu');
         $RecordOwnerID = $request->input('RecordOwnerID');
+        $EventID = $request->input('EventID');
         $Kriteria = $request->input('Kriteria');
 
         if ($KodeTamu != '') {
@@ -95,6 +121,7 @@ class TamuController extends Controller
                 ->where('ttamu.RecordOwnerID',$RecordOwnerID)
                 ->where('ttamu.KodeTamu',$KodeTamu)
                 ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
+                ->where('ttamu.EventID',$EventID)
                 ->get();
         }
         else{
@@ -103,6 +130,7 @@ class TamuController extends Controller
                 ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->where('ttamu.RecordOwnerID',$RecordOwnerID)
                 ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
+                ->where('ttamu.EventID',$EventID)
                 ->get();
         }
 

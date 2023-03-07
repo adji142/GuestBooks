@@ -8,8 +8,9 @@ import 'package:guestbook/shared/session.dart';
 
 class TamuInputPage extends StatefulWidget {
   final Session? session;
-  final String? kodeSeat;
-  TamuInputPage(this.session, {this.kodeSeat});
+  final String? KodeTamu;
+  final String? KodeEvent;
+  TamuInputPage(this.session, {this.KodeTamu, this.KodeEvent});
 
   @override
   _tamuInputState createState() => _tamuInputState();
@@ -34,7 +35,8 @@ class _tamuInputState extends State<TamuInputPage> {
       return {
         "KodeTamu": KodeTamu,
         "RecordOwnerID": this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria": ""
+        "Kriteria": "",
+        "EventID" : widget.KodeEvent.toString()
       };
     }
 
@@ -58,7 +60,7 @@ class _tamuInputState extends State<TamuInputPage> {
 
   @override
   void initState() {
-    if (this.widget.kodeSeat == "") {
+    if (this.widget.KodeTamu == "") {
       _kodeTamu = "";
       _namaTamu = "";
       _kodeKelompokTamu = "";
@@ -68,7 +70,7 @@ class _tamuInputState extends State<TamuInputPage> {
 
       _dataSet = null;
     } else {
-      _fetchData(this.widget.kodeSeat.toString());
+      _fetchData(this.widget.KodeTamu.toString());
     }
     super.initState();
   }
@@ -96,6 +98,7 @@ class _tamuInputState extends State<TamuInputPage> {
         "KelompokTamu": _kodeKelompokTamu,
         "JumlahUndangan": _jumlahUndangan.toString(),
         "AlamatTamu": _alamatUndangan,
+        "EventID" : widget.KodeEvent.toString(),
         "RecordOwnerID": this.widget.session!.RecordOwnerID
       };
     }
@@ -117,7 +120,7 @@ class _tamuInputState extends State<TamuInputPage> {
         await messageBox(
             context: context,
             title: "Error",
-            message: "Error : " + value["nError"] + " / " + value["sError"]);
+            message: "Error : " + value["nError"].toString() + " / " + value["sError"]);
       }
     });
   }

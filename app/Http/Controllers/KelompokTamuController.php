@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\KelompokTamuModels;
+use App\Models\GeneralModels;
 class KelompokTamuController extends Controller
 {
     public function CRUD(Request $request){
@@ -33,8 +34,29 @@ class KelompokTamuController extends Controller
 
         try {
             $KelompokTamuModels = new KelompokTamuModels();
+            $General = new GeneralModels();
+
             $formmode = $request->input('formmode');
             $KodeKelompok = $request->input('KodeKelompok');
+
+            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeKelompok', $KodeKelompok, 'tkelompoktamu')) {
+                $return['success'] = false;
+                $return['nError'] = 101;
+                $return['sError'] = "Kode ". $KodeKelompok. " Sudah Dipakai! " ;
+                return response()->json($return);
+            }
+
+            if ($formmode == "delete") {
+                 $result = DB::table('ttamu')
+                    ->where('KelompokTamu',$KodeKelompok)
+                    ->count();
+                if ($result > 0) {
+                    $return['success'] = false;
+                    $return['nError'] = 300;
+                    $return['sError'] = "Data Kelompok Tamu Sudah dipakai!" ;
+                    return response()->json($return);
+                }
+            }
 
             $data = [
                 'KodeKelompok' => $KodeKelompok,

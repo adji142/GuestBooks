@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\SeatModels;
+use App\Models\GeneralModels;
 
 class SeatController extends Controller
 {
@@ -34,8 +35,30 @@ class SeatController extends Controller
 
         try {
             $SeatModels = new SeatModels();
+            $General = new GeneralModels();
+
             $formmode = $request->input('formmode');
             $KodeSeat = $request->input('KodeSeat');
+
+            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeSeat', $KodeSeat, 'tseat')) {
+                $return['success'] = false;
+                $return['nError'] = 101;
+                $return['sError'] = "Kode ". $KodeSeat. " Sudah Dipakai! " ;
+                return response()->json($return);
+            }
+            // Validasi jika sudah dipakai
+
+            if ($formmode == "delete") {
+                 $result = DB::table('tkelompoktamu')
+                    ->where('KodeSeat',$KodeSeat)
+                    ->count();
+                if ($result > 0) {
+                    $return['success'] = false;
+                    $return['nError'] = 300;
+                    $return['sError'] = "Data Tempat Duduk Sudah dipakai!" ;
+                    return response()->json($return);
+                }
+            }
 
             $data = [
                 'KodeSeat' => $KodeSeat,

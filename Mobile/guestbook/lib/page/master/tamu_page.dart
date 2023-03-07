@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:guestbook/model/tamu.dart';
 import 'package:guestbook/page/master/tamu_input_page.dart';
@@ -7,7 +8,8 @@ import 'package:guestbook/shared/session.dart';
 
 class TamuMasterPage extends StatefulWidget {
   final Session? session;
-  TamuMasterPage(this.session);
+  final String? KodeEvent;
+  TamuMasterPage(this.session, {this.KodeEvent});
   @override
   _TamuMasterState createState() => _TamuMasterState();
 }
@@ -48,7 +50,8 @@ class _TamuMasterState extends State<TamuMasterPage> {
                 .push(MaterialPageRoute(
                     builder: (context) => TamuInputPage(
                           this.widget.session,
-                          kodeSeat: "",
+                          KodeTamu: "",
+                          KodeEvent: this.widget.KodeEvent,
                         )))
                 .then((value) {
               setState(() {});
@@ -87,7 +90,8 @@ class _TamuMasterState extends State<TamuMasterPage> {
       return {
         "KodeSeat": "",
         "RecordOwnerID": this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria": _searchText.text
+        "Kriteria": _searchText.text,
+        "EventID" : widget.KodeEvent.toString()
       };
     }
 
@@ -97,75 +101,96 @@ class _TamuMasterState extends State<TamuMasterPage> {
           builder: (context, AsyncSnapshot<Map> snapshot) {
             if (snapshot.hasData) {
               return RefreshIndicator(
-                onRefresh: _refreshData,
-                child: ListView.builder(
-                  itemCount: snapshot.data!["data"].length == 0 ? 0 : snapshot.data!["data"].length,
-                  itemBuilder: (context, index){
-                    return Card(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          child: Text((index + 1).toString()),
-                        ),
-                        title: Text(
-                          snapshot.data!["data"][index]["NamaTamu"] + " - " + snapshot.data!["data"][index]["NamaKelompok"],
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColorDark,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18
-                          ),
-                        ),
-                        subtitle: Text(snapshot.data!["data"][index]["KodeTamu"]),
-                        trailing: GestureDetector(
-                          child: Icon(Icons.delete),
-                          onTap: ()async{
-                            bool _konfirmasiSimpam =  await messageDialog(
-                                context: context,
-                                title: "Konfirmasi",
-                                message: "Delete Data ini ?"
-                            );
+                  onRefresh: _refreshData,
+                  child: ListView.builder(
+                      itemCount: snapshot.data!["data"].length == 0
+                          ? 0
+                          : snapshot.data!["data"].length,
+                      itemBuilder: (context, index) {
+                        return Card(
+                          child: ListTile(
+                            leading: CircleAvatar(
+                              child: Text((index + 1).toString()),
+                            ),
+                            title: Text(
+                              snapshot.data!["data"][index]["NamaTamu"] +
+                                  " - " +
+                                  snapshot.data!["data"][index]["NamaKelompok"],
+                              style: TextStyle(
+                                  color: Theme.of(context).primaryColorDark,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18),
+                            ),
+                            subtitle:
+                                Text(snapshot.data!["data"][index]["KodeTamu"]),
+                            trailing: GestureDetector(
+                              child: Icon(Icons.delete),
+                              onTap: () async {
+                                bool _konfirmasiSimpam = await messageDialog(
+                                    context: context,
+                                    title: "Konfirmasi",
+                                    message: "Delete Data ini ?");
 
-                            if(_konfirmasiSimpam){
-                              showLoadingDialog(context, _keyLoader,info: "Processing");
+                                if (_konfirmasiSimpam) {
+                                  showLoadingDialog(context, _keyLoader,
+                                      info: "Processing");
 
-                              var oSave = new TamuModels(this.widget.session);
-                              Map oParam(){
-                                return {
-                                  "formmode"      : "delete",
-                                  "KodeTamu"      : snapshot.data!["data"][index]["KodeTamu"],
-                                  "RecordOwnerID" : this.widget.session!.RecordOwnerID
-                                };
-                              }
+                                  var oSave =
+                                      new TamuModels(this.widget.session);
+                                  Map oParam() {
+                                    return {
+                                      "formmode": "delete",
+                                      "KodeTamu": snapshot.data!["data"][index]
+                                          ["KodeTamu"],
+                                      "RecordOwnerID":
+                                          this.widget.session!.RecordOwnerID,
+                                      "EventID" : widget.KodeEvent
+                                    };
+                                  }
 
-                              oSave.crud(oParam()).then((value) async{
-                                if(value["success"].toString() == "true"){
-                                  Navigator.of(context,rootNavigator: false).pop();
-                                  await messageBox(context: context,title: "Informasi",message: "Data Berhasil Dihapus");
-                                  setState(() {
-                                    
+                                  oSave.crud(oParam()).then((value) async {
+                                    if (value["success"].toString() == "true") {
+                                      Navigator.of(context,
+                                              rootNavigator: false)
+                                          .pop();
+                                      await messageBox(
+                                          context: context,
+                                          title: "Informasi",
+                                          message: "Data Berhasil Dihapus");
+                                      setState(() {});
+                                    } else {
+                                      Navigator.of(context,
+                                              rootNavigator: false)
+                                          .pop();
+                                      await messageBox(
+                                          context: context,
+                                          title: "Error",
+                                          message: "Error : " +
+                                              value["nError"].toString() +
+                                              " / " +
+                                              value["sError"]);
+                                    }
                                   });
                                 }
-                                else{
-                                  Navigator.of(context,rootNavigator: false).pop();
-                                  await messageBox(context: context,title: "Error",message: "Error : " + value["nError"].toString() + " / " + value["sError"]);
-                                }
-                                
+                              },
+                            ),
+                            onTap: () async {
+                              var x = await Navigator.of(context)
+                                  .push(MaterialPageRoute(
+                                      builder: (context) => TamuInputPage(
+                                            this.widget.session,
+                                            KodeTamu: snapshot.data!["data"]
+                                                [index]["KodeTamu"],
+                                            KodeEvent: this.widget.KodeEvent.toString(),
+                                          )))
+                                  .then((value) {
+                                setState(() {});
                               });
-                            }
-                            
-                          },
-                        ),
-                        onTap: ()async{
-                          var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => TamuInputPage(this.widget.session,kodeSeat: snapshot.data!["data"][index]["KodeTamu"],) )).then((value) {
-                            setState(() {});
-                          });
-                        },
-                      ),
-                    );
-                  }
-                )
-              );
-            }
-            else{
+                            },
+                          ),
+                        );
+                      }));
+            } else {
               return Container(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -184,18 +209,17 @@ class _TamuMasterState extends State<TamuMasterPage> {
                 ),
               );
             }
-          }
-        ),
+          }),
     );
   }
 
-  Future _refreshData() async{
-      setState((){});
+  Future _refreshData() async {
+    setState(() {});
 
-      Completer<Null> completer = Completer<Null>();
-      Future.delayed(Duration(seconds: 1)).then( (_) {
-        completer.complete();
-      });
-      return completer.future;
+    Completer<Null> completer = Completer<Null>();
+    Future.delayed(Duration(seconds: 1)).then((_) {
+      completer.complete();
+    });
+    return completer.future;
   }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\EventModels;
+use App\Models\GeneralModels;
 
 class EventController extends Controller
 {
@@ -36,15 +37,39 @@ class EventController extends Controller
 
         try {
             $EventModels = new EventModels();
+            $General = new GeneralModels();
             $formmode = $request->input('formmode');
             $KodeEvent = $request->input('KodeEvent');
 
+            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent')) {
+                $return['success'] = false;
+                $return['nError'] = 101;
+                $return['sError'] = "Kode ". $KodeEvent. " Sudah Dipakai! " ;
+                return response()->json($return);
+            }
+
+
+            if ($formmode == "delete") {
+                 $result = DB::table('ttamu')
+                    ->where('EventID',$KodeEvent)
+                    ->count();
+                if ($result > 0) {
+                    $return['success'] = false;
+                    $return['nError'] = 300;
+                    $return['sError'] = "Data Event Sudah Ada tamu!" ;
+                    return response()->json($return);
+                }
+            }
+
             $data = [
-                'KodeEvent' => $KodeEvent,
-                'NamaEvent' => $request->input('NamaEvent'),
-                'DeskripsiEvent' => $request->input('DeskripsiEvent'),
-                'EstimasiUndangan' => $request->input('EstimasiUndangan'),
-                'RecordOwnerID' => $request->input('RecordOwnerID')
+                'KodeEvent'         => $KodeEvent,
+                'NamaEvent'         => $request->input('NamaEvent'),
+                'DeskripsiEvent'    => $request->input('DeskripsiEvent'),
+                'EstimasiUndangan'  => $request->input('EstimasiUndangan'),
+                'TglEvent'          => $request->input('TglEvent'),
+                'JamEvent'          => $request->input('JamEvent'),
+                'LokasiEvent'       => $request->input('LokasiEvent'),
+                'RecordOwnerID'     => $request->input('RecordOwnerID')
             ];
 
             $save = $EventModels->storeData($formmode, $KodeEvent, $data,$request->input('RecordOwnerID'));
@@ -89,31 +114,41 @@ class EventController extends Controller
 
         if ($KodeEvent != '') {
             $result = DB::table('tevent')
-                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan, COALESCE(COUNT(ttamu.EventID),0) AS JumlahTamu'))
+                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(ttamu.JumlahUndangan),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang'))
                 ->leftjoin('ttamu',function ($join)
                 {
-                	$join->on('ttamu.EventID','=','tevent.KodeEvent')
-                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID')
+                	$join->on('ttamu.EventID','=','tevent.KodeEvent');
+                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID');
+                })
+                ->leftjoin('bukutamu',function ($join)
+                {
+                    $join->on('bukutamu.EventID','=','tevent.KodeEvent');
+                    $join->on('bukutamu.RecordOwnerID','=','tevent.RecordOwnerID');
                 })
                 ->where('tevent.RecordOwnerID',$RecordOwnerID)
-                ->where('tevent.KodeEvent',$KodeTamu)
-                ->where('tevent.NamaEnvent','LIKE','%'.$Kriteria.'%')
-                ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
-                ->groupby('tevent.KodeEvent')
+                ->where('tevent.KodeEvent',$KodeEvent)
+                ->where('tevent.NamaEvent','LIKE','%'.$Kriteria.'%')
+                // ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
+                ->groupby(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent'))
                 ->get();
         }
         else{
             $result = DB::table('tevent')
-                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan, COALESCE(COUNT(ttamu.EventID),0) AS JumlahTamu'))
+                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(ttamu.JumlahUndangan),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang'))
                 ->leftjoin('ttamu',function ($join)
                 {
-                	$join->on('ttamu.EventID','=','tevent.KodeEvent')
-                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID')
+                	$join->on('ttamu.EventID','=','tevent.KodeEvent');
+                	$join->on('ttamu.RecordOwnerID','=','tevent.RecordOwnerID');
+                })
+                ->leftjoin('bukutamu',function ($join)
+                {
+                    $join->on('bukutamu.EventID','=','tevent.KodeEvent');
+                    $join->on('bukutamu.RecordOwnerID','=','tevent.RecordOwnerID');
                 })
                 ->where('tevent.RecordOwnerID',$RecordOwnerID)
-                ->where('tevent.NamaEnvent','LIKE','%'.$Kriteria.'%')
-                ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
-                ->groupby('tevent.KodeEvent')
+                ->where('tevent.NamaEvent','LIKE','%'.$Kriteria.'%')
+                // ->orWhere('tevent.DeskripsiEvent','LIKE','%'.$Kriteria.'%')
+                ->groupby(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent'))
                 ->get();
         }
 

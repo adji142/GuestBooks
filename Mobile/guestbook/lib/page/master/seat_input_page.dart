@@ -91,7 +91,7 @@ class _seatInputState extends State<SeatInputPage>{
       }
       else{
         Navigator.of(context,rootNavigator: false).pop();
-        await messageBox(context: context,title: "Error",message: "Error : " + value["nError"] + " / " + value["sError"]);
+        await messageBox(context: context,title: "Error",message: "Error : " + value["nError"].toString() + " / " + value["sError"]);
       }
       
     });

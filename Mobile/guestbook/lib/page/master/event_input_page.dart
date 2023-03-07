@@ -4,6 +4,7 @@ import 'package:guestbook/shared/dialog.dart';
 import 'package:guestbook/shared/inputdata.dart';
 import 'package:guestbook/shared/lookup.dart';
 import 'package:guestbook/shared/session.dart';
+import 'package:intl/intl.dart';
 
 class EventInputPage extends StatefulWidget {
   final Session? session;
@@ -25,6 +26,9 @@ class _eventInputState extends State<EventInputPage> {
   String? _NamaEvent = "";
   String? _deskripsiEvent = "";
   int? _estimasiUndangan = 0;
+  DateTime _tglEvent = DateTime.now();
+  TimeOfDay _JamEvnet = TimeOfDay.now();
+  String? _lokasiEvent = "";
 
   Future<Map> _getData(String KodeEvent) async {
     Map Parameter() {
@@ -47,6 +51,16 @@ class _eventInputState extends State<EventInputPage> {
     _NamaEvent = _dataSet![0]["NamaEvent"];
     _deskripsiEvent = _dataSet![0]["DeskripsiEvent"];
     _estimasiUndangan = _dataSet![0]["EstimasiUndangan"];
+    _tglEvent = DateTime.parse(_dataSet![0]["TglEvent"]);
+    // _JamEvnet = _dataSet![0]["JamEvent"];
+    _JamEvnet = TimeOfDay(
+        hour: int.parse(
+            _dataSet![0]["JamEvent"].toString().split(":")[0].toString()),
+        minute: int.parse(
+            _dataSet![0]["JamEvent"].toString().split(":")[1].toString()));
+    _lokasiEvent = _dataSet![0]["LokasiEvent"];
+    TimeOfDay _selectedTime = TimeOfDay.now();
+
     setState(() => {});
   }
 
@@ -56,6 +70,9 @@ class _eventInputState extends State<EventInputPage> {
       _NamaEvent = "";
       _deskripsiEvent = "";
       _estimasiUndangan = 0;
+      _tglEvent = DateTime.now();
+      _JamEvnet = TimeOfDay.now();
+      _lokasiEvent = "";
       _dataSet = null;
     } else {
       _fetchData(this.widget.kodeEvent.toString());
@@ -66,7 +83,8 @@ class _eventInputState extends State<EventInputPage> {
   bool setEnablecommand() {
     valid = _NamaEvent.toString() != "" &&
         _deskripsiEvent != "" &&
-        _estimasiUndangan != 0;
+        _estimasiUndangan != 0 &&
+        _lokasiEvent != "";
 
     return valid;
   }
@@ -79,15 +97,19 @@ class _eventInputState extends State<EventInputPage> {
     Map oParam() {
       return {
         "formmode": _dataSet == null ? "add" : "edit",
-        "KodeEvent": _KodeEvent,
+        "KodeEvent": _KodeEvent.toString(),
         "NamaEvent": _NamaEvent,
         "DeskripsiEvent": _deskripsiEvent,
-        "EstimasiUndangan": _estimasiUndangan,
-        "RecordOwnerID": this.widget.session!.RecordOwnerID
+        "EstimasiUndangan": _estimasiUndangan.toString(),
+        "RecordOwnerID": this.widget.session!.RecordOwnerID,
+        "TglEvent": DateFormat("yyyy-MM-dd").format(_tglEvent).toString(),
+        "JamEvent": DateFormat("HH:mm")
+            .format(DateTime(_tglEvent.year, _tglEvent.month, _tglEvent.day,
+                _JamEvnet.hour, _JamEvnet.minute))
+            .toString(),
+        "LokasiEvent" : _lokasiEvent
       };
     }
-
-    print(oParam());
 
     oSave.crud(oParam()).then((value) async {
       if (value["success"].toString() == "true") {
@@ -102,9 +124,40 @@ class _eventInputState extends State<EventInputPage> {
         await messageBox(
             context: context,
             title: "Error",
-            message: "Error : " + value["nError"] + " / " + value["sError"]);
+            message: "Error : " + value["nError"].toString() + " / " + value["sError"]);
       }
     });
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _tglEvent,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && picked != _tglEvent) {
+      setState(() {
+        _tglEvent = picked;
+      });
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: _JamEvnet,
+      builder: (context, child) {
+        return MediaQuery(
+            data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+            child: child!);
+      },
+    );
+    if (picked != null && picked != _JamEvnet) {
+      setState(() {
+        _JamEvnet = picked;
+      });
+    }
   }
 
   @override
@@ -195,10 +248,72 @@ class _eventInputState extends State<EventInputPage> {
   Widget _formInput() {
     return ListView(
       children: [
+        _widgetTanggalEvent(),
+        _widgetJamEvent(),
         _widgetNamaEvent(),
         _widgetDeskripsiEvent(),
+        _widgetLokasiEvent(),
         _widgetJumlahTamu(),
         _WidgetsimpanData()
+      ],
+    );
+  }
+
+  Widget _widgetTanggalEvent() {
+    return ExpansionTile(
+      initiallyExpanded: true,
+      leading: CircleAvatar(child: Text("1")),
+      title: Text(
+        "Tanggal Event",
+        style: TextStyle(color: Theme.of(context).primaryColorDark),
+      ),
+      children: <Widget>[
+        GestureDetector(
+          child: ListTile(
+            //
+            contentPadding: const EdgeInsets.only(left: 70, right: 20),
+            title: Text(
+              DateFormat('dd MMMM yyyy').format(_tglEvent).toString(),
+              style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          onTap: () {
+            _selectDate(context);
+          },
+        )
+      ],
+    );
+  }
+
+  Widget _widgetJamEvent() {
+    return ExpansionTile(
+      initiallyExpanded: true,
+      leading: CircleAvatar(child: Text("2")),
+      title: Text(
+        "Jam Event",
+        style: TextStyle(color: Theme.of(context).primaryColorDark),
+      ),
+      children: <Widget>[
+        GestureDetector(
+          child: ListTile(
+            contentPadding: const EdgeInsets.only(left: 70, right: 20),
+            title: Text(
+              DateFormat("HH:mm")
+                  .format(DateTime(_tglEvent.year, _tglEvent.month,
+                      _tglEvent.day, _JamEvnet.hour, _JamEvnet.minute))
+                  .toString(),
+              style: TextStyle(
+                color: Colors.green,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          onTap: (() => _selectTime(context)),
+        )
       ],
     );
   }
@@ -206,7 +321,7 @@ class _eventInputState extends State<EventInputPage> {
   Widget _widgetNamaEvent() {
     return ExpansionTile(
       initiallyExpanded: true,
-      leading: CircleAvatar(child: Text("1")),
+      leading: CircleAvatar(child: Text("3")),
       title: Text(
         "Nama Event",
         style: TextStyle(color: Theme.of(context).primaryColorDark),
@@ -227,7 +342,7 @@ class _eventInputState extends State<EventInputPage> {
   Widget _widgetDeskripsiEvent() {
     return ExpansionTile(
       initiallyExpanded: true,
-      leading: CircleAvatar(child: Text("1")),
+      leading: CircleAvatar(child: Text("4")),
       title: Text(
         "Deskripsi Event",
         style: TextStyle(color: Theme.of(context).primaryColorDark),
@@ -245,10 +360,31 @@ class _eventInputState extends State<EventInputPage> {
     );
   }
 
+  Widget _widgetLokasiEvent() {
+    return ExpansionTile(
+      initiallyExpanded: true,
+      leading: CircleAvatar(child: Text("5")),
+      title: Text(
+        "Lokasi Event",
+        style: TextStyle(color: Theme.of(context).primaryColorDark),
+      ),
+      children: <Widget>[
+        _inputDataString(
+            title: "Lokasi Event",
+            label: "Lokasi Event",
+            dataField: this._lokasiEvent == "" ? "-" : this._lokasiEvent,
+            description: "",
+            maxlen: 3,
+            isEdit: false,
+            onChange: (v) => setState(() => this._lokasiEvent = v)),
+      ],
+    );
+  }
+
   Widget _widgetJumlahTamu() {
     return ExpansionTile(
       initiallyExpanded: true,
-      leading: CircleAvatar(child: Text("4")),
+      leading: CircleAvatar(child: Text("6")),
       title: Text(
         "Estimasi Jumlah Tamu",
         style: TextStyle(color: Theme.of(context).primaryColorDark),

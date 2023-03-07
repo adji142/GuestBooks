@@ -4,18 +4,38 @@
  Source Server         : AISServer
  Source Server Type    : MySQL
  Source Server Version : 100240
- Source Host           : 192.168.1.66:3306
+ Source Host           : localhost:3306
  Source Schema         : guestbook
 
  Target Server Type    : MySQL
  Target Server Version : 100240
  File Encoding         : 65001
 
- Date: 02/03/2023 15:55:55
+ Date: 07/03/2023 21:01:36
 */
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for bukutamu
+-- ----------------------------
+DROP TABLE IF EXISTS `bukutamu`;
+CREATE TABLE `bukutamu`  (
+  `RowID` int(11) NOT NULL AUTO_INCREMENT,
+  `KodeTamu` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `JumlahUndangan` int(6) NOT NULL,
+  `AlamatTamu` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `RecordOwnerID` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `EventID` int(11) NOT NULL,
+  `created_at` datetime(0) NULL DEFAULT NULL,
+  `updated_at` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`RowID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of bukutamu
+-- ----------------------------
 
 -- ----------------------------
 -- Table structure for failed_jobs
@@ -120,6 +140,31 @@ CREATE TABLE `tcompany`  (
 INSERT INTO `tcompany` VALUES ('CL0001', 'AIS System', 'SOLO', '123:123', 'Prasetyo Aji Wibowo', 'prasetyoajiw@gmail.com', '081325058258', 'CL0001', '-', '2023-03-02 04:07:35', NULL);
 
 -- ----------------------------
+-- Table structure for tevent
+-- ----------------------------
+DROP TABLE IF EXISTS `tevent`;
+CREATE TABLE `tevent`  (
+  `KodeEvent` int(6) NOT NULL AUTO_INCREMENT,
+  `NamaEvent` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `DeskripsiEvent` text CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `EstimasiUndangan` int(6) NOT NULL,
+  `TglEvent` date NOT NULL,
+  `JamEvent` time(6) NOT NULL,
+  `LokasiEvent` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `RecordOwnerID` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `created_at` datetime(6) NULL DEFAULT NULL,
+  `updated_at` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`KodeEvent`) USING BTREE,
+  INDEX `idEvent`(`KodeEvent`, `RecordOwnerID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 3 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of tevent
+-- ----------------------------
+INSERT INTO `tevent` VALUES (1, 'holly crab', 'berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama.berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama.berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama.berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama. berjalan berzama sama dan selalu bersama.', 650, '2023-03-08', '20:18:00.000000', 'solo', 'CL0001', '2023-03-07 13:18:54.000000', NULL);
+INSERT INTO `tevent` VALUES (2, 'holly crab 2', 'TEST', 650, '2023-03-07', '20:18:00.000000', 'solo', 'CL0001', '2023-03-07 13:18:54.000000', NULL);
+
+-- ----------------------------
 -- Table structure for tkelompoktamu
 -- ----------------------------
 DROP TABLE IF EXISTS `tkelompoktamu`;
@@ -130,7 +175,8 @@ CREATE TABLE `tkelompoktamu`  (
   `RecordOwnerID` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `created_at` datetime(0) NULL DEFAULT NULL,
   `updated_at` datetime(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`KodeKelompok`) USING BTREE
+  PRIMARY KEY (`KodeKelompok`) USING BTREE,
+  INDEX `idKelompokTamu`(`KodeKelompok`, `KodeSeat`, `RecordOwnerID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -149,13 +195,13 @@ CREATE TABLE `tseat`  (
   `RecordOwnerID` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `created_at` datetime(0) NULL DEFAULT NULL,
   `updated_at` datetime(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`KodeSeat`) USING BTREE
+  PRIMARY KEY (`KodeSeat`, `RecordOwnerID`) USING BTREE,
+  INDEX `idxSeat`(`KodeSeat`, `RecordOwnerID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of tseat
 -- ----------------------------
-INSERT INTO `tseat` VALUES ('ST0001', 'Keluarga', 'A1', 'CL0001', '2023-03-02 04:44:35', NULL);
 INSERT INTO `tseat` VALUES ('ST0002', 'Besan', 'A2', 'CL0001', '2023-03-02 04:45:00', NULL);
 
 -- ----------------------------
@@ -169,14 +215,17 @@ CREATE TABLE `ttamu`  (
   `JumlahUndangan` int(6) NOT NULL,
   `AlamatTamu` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `RecordOwnerID` varchar(55) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `EventID` int(11) NOT NULL,
   `created_at` datetime(0) NULL DEFAULT NULL,
   `updated_at` datetime(0) NULL DEFAULT NULL,
-  PRIMARY KEY (`KodeTamu`) USING BTREE
+  PRIMARY KEY (`KodeTamu`) USING BTREE,
+  INDEX `idxTamu`(`KodeTamu`, `KelompokTamu`, `RecordOwnerID`, `EventID`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of ttamu
 -- ----------------------------
+INSERT INTO `ttamu` VALUES ('TM001', 'test', 'KLP1', 2, 'twat', 'CL0001', 2, '2023-03-07 13:19:30', NULL);
 
 -- ----------------------------
 -- Table structure for users
