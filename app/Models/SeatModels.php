@@ -24,7 +24,10 @@ class SeatModels extends Model
             return $store;
         } else if ($mode == 'edit') {
             try {
-                $store = DB::table($this->table)->where('KodeSeat', $id)->update(array_merge($data, $updated));
+                $store = DB::table($this->table)
+                        ->where('KodeSeat', $id)
+                        ->where('RecordOwnerID', $RecordOwnerID)
+                        ->update(array_merge($data, $updated));
                 return $store;
             } catch (\Illuminate\Database\QueryException $ex) {
                 if($ex->getCode() === '23000') {

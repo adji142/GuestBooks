@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class KelompokTamuModels extends Model
+class BukutamuModels extends Model
 {
     use HasFactory;
-    protected $table = 'tkelompoktamu';
+    protected $table = 'bukutamu';
 
     public function storeData($mode, $id, $data,$RecordOwnerID)
     {
@@ -25,7 +25,7 @@ class KelompokTamuModels extends Model
         } else if ($mode == 'edit') {
             try {
                 $store = DB::table($this->table)
-                        ->where('KodeKelompok', $id)
+                        ->where('RowID', $id)
                         ->where('RecordOwnerID', $RecordOwnerID)
                         ->update(array_merge($data, $updated));
                 return $store;
@@ -37,14 +37,15 @@ class KelompokTamuModels extends Model
         } 
         else if ($mode == 'delete') {
             try {
-                $store = DB::table($this->table)->where('KodeKelompok', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
+                $store = DB::table($this->table)->where('RowID', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
                 return $store;
             } catch (Exception $e) {
                 if($ex->getCode() === '23000') {
                     return false;
                 }
             }
-        } else {
+        }
+        else {
             return false;
         }
     }

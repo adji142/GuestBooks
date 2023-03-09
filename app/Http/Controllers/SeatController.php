@@ -40,7 +40,7 @@ class SeatController extends Controller
             $formmode = $request->input('formmode');
             $KodeSeat = $request->input('KodeSeat');
 
-            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeSeat', $KodeSeat, 'tseat')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeSeat', $KodeSeat, 'tseat')) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeSeat. " Sudah Dipakai! " ;

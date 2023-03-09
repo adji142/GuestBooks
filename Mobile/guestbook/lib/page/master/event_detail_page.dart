@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:guestbook/model/event.dart';
+import 'package:guestbook/page/checkin.dart';
 import 'package:guestbook/page/master/event_input_page.dart';
 import 'package:guestbook/page/master/tamu_input_page.dart';
 import 'package:guestbook/page/master/tamu_page.dart';
@@ -61,7 +62,8 @@ class _eventDetailState extends State<EventDetailPage> {
     _KodeEvent = _dataSet![0]["KodeEvent"];
     _NamaEvent = _dataSet![0]["NamaEvent"];
     _deskripsiEvent = _dataSet![0]["DeskripsiEvent"];
-    _estimasiUndangan = _dataSet![0]["EstimasiUndangan"];
+    // _estimasiUndangan = _dataSet![0]["EstimasiUndangan"];
+    _estimasiUndangan = 0;
     _tglEvent = DateTime.parse(_dataSet![0]["TglEvent"]);
     _JamEvnet = TimeOfDay(
         hour: int.parse(
@@ -509,7 +511,17 @@ class _eventDetailState extends State<EventDetailPage> {
             style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.all<Color>(Colors.green)),
-            onPressed: !_eventStarted ? null : () {},
+            onPressed: !_eventStarted ? null : () async{
+              var x = await Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (context) => CheckinPage(
+                            this.widget.session,
+                            KodeEvent: _KodeEvent.toString(),
+                          )))
+                  .then((value) {
+                _fetchData(this.widget.kodeEvent.toString());
+              });
+            },
           ),
         ),
       ),

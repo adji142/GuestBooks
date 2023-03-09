@@ -39,7 +39,7 @@ class KelompokTamuController extends Controller
             $formmode = $request->input('formmode');
             $KodeKelompok = $request->input('KodeKelompok');
 
-            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeKelompok', $KodeKelompok, 'tkelompoktamu')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeKelompok', $KodeKelompok, 'tkelompoktamu')) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeKelompok. " Sudah Dipakai! " ;

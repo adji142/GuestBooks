@@ -7,6 +7,7 @@ use App\Http\Controllers\SeatController;
 use App\Http\Controllers\KelompokTamuController;
 use App\Http\Controllers\TamuController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\BukuTamuController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -74,4 +75,11 @@ Route::group([
     // Event Tamu
     Route::post('/eventcrud', [EventController::class, 'CRUD']);
     Route::post('/eventread', [EventController::class, 'Read']);
+});
+
+Route::group([
+    'prefix' => 'trx',
+],function ($router) {
+    // BukuTamu
+    Route::post('/bukutamu', [BukuTamuController::class, 'CRUD']);
 });

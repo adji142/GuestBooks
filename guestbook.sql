@@ -11,7 +11,7 @@
  Target Server Version : 100240
  File Encoding         : 65001
 
- Date: 07/03/2023 21:01:36
+ Date: 09/03/2023 22:13:53
 */
 
 SET NAMES utf8mb4;
@@ -31,11 +31,13 @@ CREATE TABLE `bukutamu`  (
   `created_at` datetime(0) NULL DEFAULT NULL,
   `updated_at` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`RowID`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of bukutamu
 -- ----------------------------
+INSERT INTO `bukutamu` VALUES (1, 'TM0001', 5, 'solo utara', 'CL0001', 2, '2023-03-09 12:54:08', NULL);
+INSERT INTO `bukutamu` VALUES (2, 'TM001', 6, 'solo yang sangat jauh tempatnya, jadi harus naik becak 4 kali sampai degan perempatan kemudian lanjut naik babi', 'CL0001', 2, '2023-03-09 14:11:47', '2023-03-09 15:11:06');
 
 -- ----------------------------
 -- Table structure for failed_jobs
@@ -183,6 +185,7 @@ CREATE TABLE `tkelompoktamu`  (
 -- Records of tkelompoktamu
 -- ----------------------------
 INSERT INTO `tkelompoktamu` VALUES ('KLP1', 'Besan', 'ST0002', 'CL0001', '2023-03-02 04:45:32', '2023-03-02 04:45:47');
+INSERT INTO `tkelompoktamu` VALUES ('KLP2', 'Sriwedari', 'ST0001', 'CL0001', '2023-03-08 03:44:55', NULL);
 
 -- ----------------------------
 -- Table structure for tseat
@@ -202,6 +205,7 @@ CREATE TABLE `tseat`  (
 -- ----------------------------
 -- Records of tseat
 -- ----------------------------
+INSERT INTO `tseat` VALUES ('ST0001', 'Normal Standing', 'A1', 'CL0001', '2023-03-08 03:44:19', NULL);
 INSERT INTO `tseat` VALUES ('ST0002', 'Besan', 'A2', 'CL0001', '2023-03-02 04:45:00', NULL);
 
 -- ----------------------------
@@ -225,7 +229,8 @@ CREATE TABLE `ttamu`  (
 -- ----------------------------
 -- Records of ttamu
 -- ----------------------------
-INSERT INTO `ttamu` VALUES ('TM001', 'test', 'KLP1', 2, 'twat', 'CL0001', 2, '2023-03-07 13:19:30', NULL);
+INSERT INTO `ttamu` VALUES ('TM0001', 'gadulani', 'KLP2', 5, 'solo utara', 'CL0001', 2, '2023-03-08 03:45:28', NULL);
+INSERT INTO `ttamu` VALUES ('TM001', 'test', 'KLP1', 2, 'solo yang sangat jauh tempatnya, jadi harus naik becak 4 kali sampai degan perempatan kemudian lanjut naik babi', 'CL0001', 2, '2023-03-07 13:19:30', '2023-03-08 03:32:05');
 
 -- ----------------------------
 -- Table structure for users

@@ -41,7 +41,7 @@ class EventController extends Controller
             $formmode = $request->input('formmode');
             $KodeEvent = $request->input('KodeEvent');
 
-            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent')) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeEvent. " Sudah Dipakai! " ;
@@ -122,6 +122,7 @@ class EventController extends Controller
                 })
                 ->leftjoin('bukutamu',function ($join)
                 {
+                    $join->on('bukutamu.KodeTamu','=','ttamu.KodeTamu');
                     $join->on('bukutamu.EventID','=','tevent.KodeEvent');
                     $join->on('bukutamu.RecordOwnerID','=','tevent.RecordOwnerID');
                 })
@@ -142,6 +143,7 @@ class EventController extends Controller
                 })
                 ->leftjoin('bukutamu',function ($join)
                 {
+                    $join->on('bukutamu.KodeTamu','=','ttamu.KodeTamu');
                     $join->on('bukutamu.EventID','=','tevent.KodeEvent');
                     $join->on('bukutamu.RecordOwnerID','=','tevent.RecordOwnerID');
                 })

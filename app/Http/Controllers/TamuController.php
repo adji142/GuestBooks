@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\TamuModels;
-use App\Models\GeneralModels();
+use App\Models\GeneralModels;
 
 class TamuController extends Controller
 {
@@ -42,7 +42,7 @@ class TamuController extends Controller
             $formmode = $request->input('formmode');
             $KodeTamu = $request->input('KodeTamu');
 
-            if ($General->isDuplicate($request->input('RecordOwnerID'), 'KodeTamu', $KodeTamu, 'ttamu')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeTamu', $KodeTamu, 'ttamu')) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeTamu. " Sudah Dipakai! " ;
@@ -116,8 +116,19 @@ class TamuController extends Controller
 
         if ($KodeTamu != '') {
             $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,ttamu.KelompokTamu,tkelompoktamu.NamaKelompok'))
-                ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
+                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,ttamu.KelompokTamu,tkelompoktamu.NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir'))
+                // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
+                ->leftjoin('tkelompoktamu',function ($join)
+                {
+                    $join->on('tkelompoktamu.KodeKelompok','=','ttamu.KelompokTamu');
+                    $join->on('tkelompoktamu.RecordOwnerID','=','ttamu.RecordOwnerID');
+                })
+                ->leftjoin('bukutamu',function ($join)
+                {
+                    $join->on('bukutamu.KodeTamu','=','ttamu.KodeTamu');
+                    $join->on('bukutamu.RecordOwnerID','=','ttamu.RecordOwnerID');
+                    $join->on('bukutamu.EventID','=','ttamu.EventID');
+                })
                 ->where('ttamu.RecordOwnerID',$RecordOwnerID)
                 ->where('ttamu.KodeTamu',$KodeTamu)
                 ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
@@ -126,8 +137,19 @@ class TamuController extends Controller
         }
         else{
             $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,tkelompoktamu.NamaKelompok'))
-                ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
+                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,tkelompoktamu.NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir'))
+                // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
+                ->leftjoin('tkelompoktamu',function ($join)
+                {
+                    $join->on('tkelompoktamu.KodeKelompok','=','ttamu.KelompokTamu');
+                    $join->on('tkelompoktamu.RecordOwnerID','=','ttamu.RecordOwnerID');
+                })
+                ->leftjoin('bukutamu',function ($join)
+                {
+                    $join->on('bukutamu.KodeTamu','=','ttamu.KodeTamu');
+                    $join->on('bukutamu.RecordOwnerID','=','ttamu.RecordOwnerID');
+                    $join->on('bukutamu.EventID','=','ttamu.EventID');
+                })
                 ->where('ttamu.RecordOwnerID',$RecordOwnerID)
                 ->where('ttamu.NamaTamu','LIKE','%'.$Kriteria.'%')
                 ->where('ttamu.EventID',$EventID)
