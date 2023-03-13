@@ -10,7 +10,8 @@ import 'package:guestbook/shared/session.dart';
 class KelompokInputPage extends StatefulWidget{
   final Session ? session;
   final String ? kodeKelompok;
-  KelompokInputPage(this.session,{this.kodeKelompok});
+  final String ? kodeEvent;
+  KelompokInputPage(this.session,this.kodeEvent,{this.kodeKelompok});
 
   @override
   _kelompokInputState createState() => _kelompokInputState();
@@ -31,7 +32,8 @@ class _kelompokInputState extends State<KelompokInputPage>{
       return {
         "KodeKelompok"  : KodeKelompok,
         "RecordOwnerID" : this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria"      : ""
+        "Kriteria"      : "",
+        "EventID"       : this.widget.kodeEvent.toString()
       };
     }
     var temp = await KelompokTamuModels(this.widget.session).read(Parameter());
@@ -82,7 +84,8 @@ class _kelompokInputState extends State<KelompokInputPage>{
         "KodeKelompok"      : _kodeKelompok,
         "NamaKelompok"      : _namaKelompok,
         "KodeSeat"          : _kodeSeat,
-        "RecordOwnerID" : this.widget.session!.RecordOwnerID
+        "RecordOwnerID" : this.widget.session!.RecordOwnerID,
+        "EventID"       : this.widget.kodeEvent.toString()
       };
     }
 
@@ -200,7 +203,8 @@ class _kelompokInputState extends State<KelompokInputPage>{
       onTap: () async{
         Map parameter(){
           return {
-            "RecordOwnerID" : this.widget.session!.RecordOwnerID
+            "RecordOwnerID" : this.widget.session!.RecordOwnerID,
+            "EventID"       : this.widget.kodeEvent.toString()
           };
         }
         var result = await Navigator.push(context, 

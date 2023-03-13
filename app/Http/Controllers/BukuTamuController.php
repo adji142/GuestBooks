@@ -44,6 +44,7 @@ class BukuTamuController extends Controller
             $data = [
                 'RowID'         	=> $RowID,
                 'KodeTamu'         	=> $request->input('KodeTamu'),
+                'NamaTamu'          => $request->input('NamaTamu'),
                 'JumlahUndangan'    => $request->input('JumlahUndangan'),
                 'AlamatTamu'  		=> $request->input('AlamatTamu'),
                 'EventID'          	=> $request->input('EventID'),
@@ -76,6 +77,29 @@ class BukuTamuController extends Controller
 
             DB::rollback();
         }
+
+        return response()->json($return);
+    }
+
+    public function GetDocumentNumber(Request $request)
+    {
+        $temp = new MessageDefault;
+        $return = $temp->DefaultMessage();
+        $sError = "";
+
+        $RecordOwnerID = $request->input('RecordOwnerID');
+        $EventID = $request->input('EventID');
+
+        $Prefix = "UNK";
+
+        $result = DB::table('ttamu')
+                ->select(DB::raw('COUNT(*) +1 NextNumber'))
+                ->where(DB::raw('LEFT(KodeTamu,3)'),$Prefix)
+                ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('EventID',$EventID)
+                ->get();
+
+        $return['data'] = $result->toArray();
 
         return response()->json($return);
     }

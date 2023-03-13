@@ -40,7 +40,7 @@ class SeatController extends Controller
             $formmode = $request->input('formmode');
             $KodeSeat = $request->input('KodeSeat');
 
-            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeSeat', $KodeSeat, 'tseat')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeSeat', $KodeSeat, 'tseat',$request->input('EventID'))) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeSeat. " Sudah Dipakai! " ;
@@ -61,9 +61,10 @@ class SeatController extends Controller
             }
 
             $data = [
-                'KodeSeat' => $KodeSeat,
-                'NamaSeat' => $request->input('NamaSeat'),
-                'Area' => $request->input('Area'),
+                'KodeSeat'  => $KodeSeat,
+                'NamaSeat'  => $request->input('NamaSeat'),
+                'Area'      => $request->input('Area'),
+                'EventID'   => $request->input('EventID'),
                 'RecordOwnerID' => $request->input('RecordOwnerID')
             ];
 
@@ -105,10 +106,12 @@ class SeatController extends Controller
 
         $RecordOwnerID = $request->input('RecordOwnerID');
         $Kriteria = $request->input('Kriteria');
+        $EventID = $request->input('EventID');
 
         $result = DB::table('tseat as a')
                 ->select(DB::raw('a.KodeSeat AS ID, a.NamaSeat AS Title'))
                 ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('EventID',$EventID)
                 ->where('NamaSeat','LIKE','%'.$Kriteria.'%')
                 ->get();
 
@@ -125,6 +128,7 @@ class SeatController extends Controller
 
         $KodeSeat = $request->input('KodeSeat');
         $RecordOwnerID = $request->input('RecordOwnerID');
+        $EventID = $request->input('EventID');
         $Kriteria = $request->input('Kriteria');
 
         if ($KodeSeat != '') {
@@ -132,6 +136,7 @@ class SeatController extends Controller
                 ->select(DB::raw('a.KodeSeat, a.NamaSeat, a.Area'))
                 ->where('RecordOwnerID',$RecordOwnerID)
                 ->where('KodeSeat',$KodeSeat)
+                ->where('EventID',$EventID)
                 ->where('NamaSeat','LIKE','%'.$Kriteria.'%')
                 ->get();
         }
@@ -139,6 +144,7 @@ class SeatController extends Controller
             $result = DB::table('tseat as a')
                 ->select(DB::raw('a.KodeSeat, a.NamaSeat, a.Area'))
                 ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('EventID',$EventID)
                 ->where('NamaSeat','LIKE','%'.$Kriteria.'%')
                 ->get();
         }

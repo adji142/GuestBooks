@@ -36,7 +36,7 @@ class _CheckinPageState extends State<CheckinPage> {
       result = "Fail Scan";
     }
 
-    _scannedBarcode = result == "Fail Scan" ? "" : result;
+    _scannedBarcode = result == "Fail Scan" || result == "-1" ? "" : result;
 
     if (!mounted) return result;
 
@@ -69,68 +69,80 @@ class _CheckinPageState extends State<CheckinPage> {
         fit: StackFit.expand,
         children: [
           Positioned(
-            left: width * 10,
-            bottom: height * 2,
-            child: FloatingActionButton(
-              heroTag: "hero1",
-              child: Icon(Icons.qr_code),
-              onPressed: () async {
-                String? result = await scanQR();
-                String? _kodeTamu = "";
+              left: width * 10,
+              bottom: height * 2,
+              child: FloatingActionButton(
+                  heroTag: "hero1",
+                  child: Icon(Icons.qr_code),
+                  onPressed: () async {
+                    String? result = await scanQR();
+                    String? _kodeTamu = "";
 
-                _kodeTamu = result.characters.toString();
+                    _kodeTamu = result.characters.toString();
 
-                Map Parameter() {
-                  return {
-                    "KodeTamu": _kodeTamu,
-                    "RecordOwnerID": this.widget.session!.RecordOwnerID.toString(),
-                    "Kriteria": "",
-                    "EventID": widget.KodeEvent.toString()
-                  };
-                }
+                    Map Parameter() {
+                      return {
+                        "KodeTamu": _kodeTamu,
+                        "RecordOwnerID":
+                            this.widget.session!.RecordOwnerID.toString(),
+                        "Kriteria": "",
+                        "EventID": widget.KodeEvent.toString()
+                      };
+                    }
 
-                showLoadingDialog(context, _keyLoader, info: "Processing");
+                    showLoadingDialog(context, _keyLoader, info: "Processing");
 
-                var tempTamu = new TamuModels(this.widget.session)
-                    .read(Parameter())
-                    .then((value) => {
-                          if (value["data"].length > 0)
-                            {
-                              _checkinProcedure(
-                                  context: context,
-                                  kodeTamu: _kodeTamu.toString(),
-                                  jumlahTamu: int.parse(value["data"][0]
-                                          ["JumlahUndangan"]
-                                      .toString()),
-                                  alamat: value["data"][0]["AlamatTamu"].toString(),
-                                  rowID: value["data"][0]["RowID"],
-                                  tamuHadir: int.parse(
-                                      value["data"][0]["TamuHadir"].toString()),
+                    var tempTamu = new TamuModels(this.widget.session)
+                        .read(Parameter())
+                        .then((value) => {
+                              if (value["data"].length > 0)
+                                {
+                                  _checkinProcedure(
+                                      context: context,
+                                      kodeTamu: _kodeTamu.toString(),
+                                      jumlahTamu: int.parse(value["data"][0]
+                                              ["JumlahUndangan"]
+                                          .toString()),
+                                      alamat: value["data"][0]["AlamatTamu"]
+                                          .toString(),
+                                      rowID: value["data"][0]["RowID"],
+                                      tamuHadir: int.parse(value["data"][0]
+                                              ["TamuHadir"]
+                                          .toString()),
                                       namaTamu: value["data"][0]["NamaTamu"])
-                            }
-                          else
-                            {
-                              Navigator.of(context, rootNavigator: false).pop(),
-                              messageBox(
-                                  context: context,
-                                  title: "Error",
-                                  message: "Data Tidak ditmukan")
-                            }
-                        });
+                                }
+                              else
+                                {
+                                  Navigator.of(context, rootNavigator: false)
+                                      .pop(),
+                                  messageBox(
+                                      context: context,
+                                      title: "Error",
+                                      message: "Data Tidak ditmukan")
+                                }
+                            });
 
-                // await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventInputPage(this.widget.session,kodeEvent: "",) ))
-              })
-          ),
+                    // await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventInputPage(this.widget.session,kodeEvent: "",) ))
+                  })),
           Positioned(
-            right: width * 10,
-            bottom: height * 2,
-            child: FloatingActionButton(
-              heroTag: "hero2",
-              backgroundColor: Colors.red,
-              child: Icon(Icons.add),
-              onPressed:(){} ,
-            )
-          )
+              right: width * 10,
+              bottom: height * 2,
+              child: FloatingActionButton(
+                heroTag: "hero2",
+                backgroundColor: Colors.red,
+                child: Icon(Icons.add),
+                onPressed: () {
+                  _checkinProcedure(
+                      context: context,
+                      kodeTamu: "",
+                      namaTamu: "",
+                      alamat: "",
+                      isManual: true,
+                      jumlahTamu: 0,
+                      rowID: 0,
+                      tamuHadir: 0);
+                },
+              ))
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -259,7 +271,8 @@ class _CheckinPageState extends State<CheckinPage> {
                                   tamuHadir: int.parse(snapshot.data!["data"]
                                           [index]["TamuHadir"]
                                       .toString()),
-                                  namaTamu: snapshot.data!["data"][index]["NamaTamu"]);
+                                  namaTamu: snapshot.data!["data"][index]
+                                      ["NamaTamu"]);
                             },
                             icon: Icon(Icons.more_vert),
                           )),
@@ -342,10 +355,11 @@ class _CheckinPageState extends State<CheckinPage> {
                   padding: const EdgeInsets.all(15),
                   child: TextField(
                     readOnly: !isManual,
+                    autofocus: isManual,
                     controller: _namaTamu,
                     textAlign: TextAlign.start,
                     textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.number,
+                    keyboardType: TextInputType.text,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
@@ -406,11 +420,32 @@ class _CheckinPageState extends State<CheckinPage> {
                 showLoadingDialog(context, _keyLoader, info: "Processing");
 
                 var oSave = new BukuTamuModels(this.widget.session);
+
+                Map oParamChange() {
+                  return {
+                    'RecordOwnerID': this.widget.session!.RecordOwnerID,
+                    'EventID': this.widget.KodeEvent.toString()
+                  };
+                }
+
+                // kodeTamu = kodeTamu == "" && isManual
+                //     ? "UNK" + oSave.getNumber(oParamChange()).toString()
+                //     : kodeTamu;
+
+                // String _nextNumber = "";
+                var x = await oSave.getNumber(oParamChange()).then((value) {
+                  kodeTamu = "UNK"+value["data"][0]["NextNumber"].toString();
+                  setState(() {
+                    
+                  });
+                },);
+
                 Map oParam() {
                   return {
                     "formmode": rowID == 0 ? "add" : "edit",
                     "RowID": rowID.toString(),
                     "KodeTamu": kodeTamu.toString(),
+                    "NamaTamu": _namaTamu.text,
                     "JumlahUndangan": rowID == 0
                         ? _JumlahTamu.text.toString()
                         : (int.parse(_JumlahTamu.text) + tamuHadir).toString(),
@@ -419,6 +454,8 @@ class _CheckinPageState extends State<CheckinPage> {
                     "RecordOwnerID": this.widget.session!.RecordOwnerID
                   };
                 }
+
+                print(oParam());
 
                 oSave.crud(oParam()).then((value) async {
                   // print(oParam());

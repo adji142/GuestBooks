@@ -4,6 +4,8 @@ import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:guestbook/model/event.dart';
 import 'package:guestbook/page/checkin.dart';
 import 'package:guestbook/page/master/event_input_page.dart';
+import 'package:guestbook/page/master/kelompoktamu_page.dart';
+import 'package:guestbook/page/master/seat_page.dart';
 import 'package:guestbook/page/master/tamu_input_page.dart';
 import 'package:guestbook/page/master/tamu_page.dart';
 import 'package:guestbook/shared/dialog.dart';
@@ -152,7 +154,7 @@ class _eventDetailState extends State<EventDetailPage> {
               _deskripsiEvent!,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            Row(
+            Wrap(
               children: [
                 ElevatedButton.icon(
                   icon: Icon(Icons.edit),
@@ -170,6 +172,32 @@ class _eventDetailState extends State<EventDetailPage> {
                             setState(() {});
                           });
                         },
+                ),
+                Container(
+                  width: width * 2,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.chair),
+                  label: Text("Tempat Duduk"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.green)
+                  ),
+                  onPressed: () async {
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => SeatMasterPage(this.widget.session,this.widget.kodeEvent.toString())));
+                  },
+                ),
+                Container(
+                  width: width * 2,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.people_alt),
+                  label: Text("Kelompok Tamu"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.teal)
+                  ),
+                  onPressed: () async {
+                    Navigator.push(context,MaterialPageRoute(builder: (context) => KelompokMasterPage(this.widget.session,this.widget.kodeEvent.toString())));
+                  },
                 ),
                 Container(
                   width: width * 2,

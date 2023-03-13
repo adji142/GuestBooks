@@ -39,7 +39,7 @@ class KelompokTamuController extends Controller
             $formmode = $request->input('formmode');
             $KodeKelompok = $request->input('KodeKelompok');
 
-            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeKelompok', $KodeKelompok, 'tkelompoktamu')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeKelompok', $KodeKelompok, 'tkelompoktamu',$request->input('EventID'))) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeKelompok. " Sudah Dipakai! " ;
@@ -62,7 +62,8 @@ class KelompokTamuController extends Controller
                 'KodeKelompok' => $KodeKelompok,
                 'NamaKelompok' => $request->input('NamaKelompok'),
                 'KodeSeat' => $request->input('KodeSeat'),
-                'RecordOwnerID' => $request->input('RecordOwnerID')
+                'RecordOwnerID' => $request->input('RecordOwnerID'),
+                'EventID'   => $request->input('EventID')
             ];
 
             $save = $KelompokTamuModels->storeData($formmode, $KodeKelompok, $data, $request->input('RecordOwnerID'));
@@ -103,10 +104,12 @@ class KelompokTamuController extends Controller
 
         $RecordOwnerID = $request->input('RecordOwnerID');
         $Kriteria = $request->input('Kriteria');
+        $EventID = $request->input('EventID');
 
         $result = DB::table('tkelompoktamu as a')
                 ->select(DB::raw('a.KodeKelompok AS ID, a.NamaKelompok AS Title'))
                 ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('EventID',$EventID)
                 ->where('NamaKelompok','LIKE','%'.$Kriteria.'%')
                 ->get();
 
@@ -124,6 +127,7 @@ class KelompokTamuController extends Controller
         $KodeKelompok = $request->input('KodeKelompok');
         $RecordOwnerID = $request->input('RecordOwnerID');
         $Kriteria = $request->input('Kriteria');
+        $EventID = $request->input('EventID');
 
         if ($KodeKelompok != '') {
             $result = DB::table('tkelompoktamu as a')
@@ -131,6 +135,7 @@ class KelompokTamuController extends Controller
                 ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
                 ->where('a.RecordOwnerID',$RecordOwnerID)
                 ->where('a.KodeKelompok',$KodeKelompok)
+                ->where('a.EventID',$EventID)
                 ->where('a.NamaKelompok','LIKE','%'.$Kriteria.'%')
                 ->get();
         }
@@ -139,6 +144,7 @@ class KelompokTamuController extends Controller
                 ->select(DB::raw('a.KodeKelompok, a.NamaKelompok, a.KodeSeat,tseat.NamaSeat'))
                 ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
                 ->where('a.RecordOwnerID',$RecordOwnerID)
+                ->where('a.EventID',$EventID)
                 ->where('a.NamaKelompok','LIKE','%'.$Kriteria.'%')
                 ->get();
         }

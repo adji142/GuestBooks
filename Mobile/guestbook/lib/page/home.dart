@@ -54,32 +54,32 @@ class _HomeState extends State<HomePage> {
               arrowColor: Theme.of(context).primaryColorLight,
               otherAccountsPictures: <Widget>[],
             ),
-            ListTile(
-              title: Text("Master Tempat Duduk"),
-              leading: Icon(Icons.chair),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SeatMasterPage(
-                              this.widget.session,
-                            )));
-              },
-            ),
-            ListTile(
-              title: Text("Master Kelompok Tamu"),
-              leading: Icon(Icons.people_alt),
-              trailing: Icon(Icons.arrow_forward_ios),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => KelompokMasterPage(
-                              this.widget.session,
-                            )));
-              },
-            ),
+            // ListTile(
+            //   title: Text("Master Tempat Duduk"),
+            //   leading: Icon(Icons.chair),
+            //   trailing: Icon(Icons.arrow_forward_ios),
+            //   onTap: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => SeatMasterPage(
+            //                   this.widget.session,
+            //                 )));
+            //   },
+            // ),
+            // ListTile(
+            //   title: Text("Master Kelompok Tamu"),
+            //   leading: Icon(Icons.people_alt),
+            //   trailing: Icon(Icons.arrow_forward_ios),
+            //   onTap: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => KelompokMasterPage(
+            //                   this.widget.session,
+            //                 )));
+            //   },
+            // ),
             // ListTile(
             //   title: Text("Master Tamu"),
             //   leading: Icon(Icons.person),

@@ -10,11 +10,12 @@ class GeneralModels extends Model
 {
     use HasFactory;
 
-    public function isDuplicate($RecordOwnerID, $KeyID, $KeyValue,$Table)
+    public function isDuplicate($RecordOwnerID, $KeyID, $KeyValue,$Table, $EventID)
     {
     	$result = DB::table($Table)
                     ->where($KeyID,$KeyValue)
                     ->where('RecordOwnerID', $RecordOwnerID)
+                    ->where('EventID', $EventID)
                     ->count();
         if ($result > 0) {
             return true;

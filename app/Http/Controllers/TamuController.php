@@ -42,7 +42,7 @@ class TamuController extends Controller
             $formmode = $request->input('formmode');
             $KodeTamu = $request->input('KodeTamu');
 
-            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeTamu', $KodeTamu, 'ttamu')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeTamu', $KodeTamu, 'ttamu',$request->input('EventID'))) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeTamu. " Sudah Dipakai! " ;
@@ -116,7 +116,7 @@ class TamuController extends Controller
 
         if ($KodeTamu != '') {
             $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,ttamu.KelompokTamu,tkelompoktamu.NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir'))
+                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir"))
                 // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->leftjoin('tkelompoktamu',function ($join)
                 {
@@ -137,7 +137,7 @@ class TamuController extends Controller
         }
         else{
             $result = DB::table('ttamu')
-                ->select(DB::raw('ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,tkelompoktamu.NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir'))
+                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir"))
                 // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->leftjoin('tkelompoktamu',function ($join)
                 {

@@ -7,7 +7,8 @@ import 'package:guestbook/shared/session.dart';
 
 class SeatMasterPage extends StatefulWidget {
   final Session ? session;
-  SeatMasterPage(this.session);
+  final String? KodeEvent;
+  SeatMasterPage(this.session, this.KodeEvent);
   @override
   _SeatMasterState createState() => _SeatMasterState();
 }
@@ -42,7 +43,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async{                  
-            var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeatInputPage(this.widget.session,kodeSeat: "",) )).then((value) {
+            var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeatInputPage(this.widget.session,this.widget.KodeEvent,kodeSeat: "",) )).then((value) {
               setState(() {});
             });
             _searchMode = true;
@@ -84,7 +85,8 @@ class _SeatMasterState extends State<SeatMasterPage> {
       return {
         "KodeSeat"      : "",
         "RecordOwnerID" : this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria"      : _searchText.text
+        "Kriteria"      : _searchText.text,
+        "EventID"       : this.widget.KodeEvent.toString()
       };
     }
     return Expanded(
@@ -102,7 +104,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
                   return Card(
                     child: ListTile(
                       leading: CircleAvatar(
-                        child: Text(snapshot.data!["data"][index]["Area"]),
+                        child: Text((index + 1).toString()),
                       ),
                       title: Text(
                         snapshot.data!["data"][index]["NamaSeat"],
@@ -112,7 +114,9 @@ class _SeatMasterState extends State<SeatMasterPage> {
                           fontSize: 18
                         ),
                       ),
-                      subtitle: Text(snapshot.data!["data"][index]["KodeSeat"]),
+                      subtitle: Text(
+                        "Area : "+ snapshot.data!["data"][index]["Area"]
+                      ),
                       trailing: GestureDetector(
                         child: Icon(Icons.delete),
                         onTap: ()async{
@@ -130,7 +134,8 @@ class _SeatMasterState extends State<SeatMasterPage> {
                               return {
                                 "formmode"      : "delete",
                                 "KodeSeat"      : snapshot.data!["data"][index]["KodeSeat"],
-                                "RecordOwnerID" : this.widget.session!.RecordOwnerID
+                                "RecordOwnerID" : this.widget.session!.RecordOwnerID,
+                                "EventID"       : this.widget.KodeEvent.toString()
                               };
                             }
 
@@ -153,7 +158,7 @@ class _SeatMasterState extends State<SeatMasterPage> {
                         },
                       ),
                       onTap: ()async{
-                        var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeatInputPage(this.widget.session,kodeSeat: snapshot.data!["data"][index]["KodeSeat"],) )).then((value) {
+                        var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SeatInputPage(this.widget.session,this.widget.KodeEvent.toString(),kodeSeat: snapshot.data!["data"][index]["KodeSeat"],) )).then((value) {
                           setState(() {});
                         });
                       },

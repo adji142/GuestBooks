@@ -41,7 +41,7 @@ class EventController extends Controller
             $formmode = $request->input('formmode');
             $KodeEvent = $request->input('KodeEvent');
 
-            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent')) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent',$KodeEvent)) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeEvent. " Sudah Dipakai! " ;
@@ -114,7 +114,7 @@ class EventController extends Controller
 
         if ($KodeEvent != '') {
             $result = DB::table('tevent')
-                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(ttamu.JumlahUndangan),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang'))
+                ->select(DB::raw("tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(CASE WHEN ttamu.KelompokTamu <> '' THEN ttamu.JumlahUndangan ELSE 0 END ),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang"))
                 ->leftjoin('ttamu',function ($join)
                 {
                 	$join->on('ttamu.EventID','=','tevent.KodeEvent');
@@ -135,7 +135,7 @@ class EventController extends Controller
         }
         else{
             $result = DB::table('tevent')
-                ->select(DB::raw('tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(ttamu.JumlahUndangan),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang'))
+                ->select(DB::raw("tevent.KodeEvent, tevent.NamaEvent, tevent.DeskripsiEvent, tevent.EstimasiUndangan,tevent.TglEvent,tevent.JamEvent,tevent.LokasiEvent, CAST(COALESCE(SUM(CASE WHEN ttamu.KelompokTamu <> '' THEN ttamu.JumlahUndangan ELSE 0 END),0) AS INT) AS JumlahTamu,CAST(COALESCE(SUM(bukutamu.JumlahUndangan),0) AS INT) AS JumlahTamuDatang"))
                 ->leftjoin('ttamu',function ($join)
                 {
                 	$join->on('ttamu.EventID','=','tevent.KodeEvent');

@@ -27,6 +27,7 @@ class TamuModels extends Model
                 $store = DB::table($this->table)
                         ->where('KodeTamu', $id)
                         ->where('RecordOwnerID', $RecordOwnerID)
+                        ->where('EventID',$data["EventID"])
                         ->update(array_merge($data, $updated));
                 return $store;
             } catch (\Illuminate\Database\QueryException $ex) {

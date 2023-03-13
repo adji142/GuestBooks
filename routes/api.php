@@ -82,4 +82,5 @@ Route::group([
 ],function ($router) {
     // BukuTamu
     Route::post('/bukutamu', [BukuTamuController::class, 'CRUD']);
+    Route::post('/getnumber', [BukuTamuController::class, 'GetDocumentNumber']);
 });

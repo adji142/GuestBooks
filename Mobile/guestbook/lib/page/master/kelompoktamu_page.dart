@@ -9,7 +9,8 @@ import 'package:guestbook/shared/session.dart';
 
 class KelompokMasterPage extends StatefulWidget {
   final Session ? session;
-  KelompokMasterPage(this.session);
+  final String ? kodeEvent;
+  KelompokMasterPage(this.session, this.kodeEvent);
   @override
   _KelompokMasterState createState() => _KelompokMasterState();
 }
@@ -45,7 +46,7 @@ class _KelompokMasterState extends State<KelompokMasterPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async{                  
-            var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => KelompokInputPage(this.widget.session,kodeKelompok: "",) )).then((value) {
+            var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => KelompokInputPage(this.widget.session,this.widget.kodeEvent.toString(),kodeKelompok: "",) )).then((value) {
               setState(() {});
             });
             _searchMode = true;
@@ -87,7 +88,8 @@ class _KelompokMasterState extends State<KelompokMasterPage> {
       return {
         "KodeKelompok"  : "",
         "RecordOwnerID" : this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria"      : _searchText.text
+        "Kriteria"      : _searchText.text,
+        "EventID"       : this.widget.kodeEvent.toString()
       };
     }
     return Expanded(
@@ -133,7 +135,8 @@ class _KelompokMasterState extends State<KelompokMasterPage> {
                               return {
                                 "formmode"      : "delete",
                                 "KodeKelompok"  : snapshot.data!["data"][index]["KodeKelompok"],
-                                "RecordOwnerID" : this.widget.session!.RecordOwnerID
+                                "RecordOwnerID" : this.widget.session!.RecordOwnerID,
+                                "EventID"       : this.widget.kodeEvent.toString()
                               };
                             }
 
@@ -156,7 +159,7 @@ class _KelompokMasterState extends State<KelompokMasterPage> {
                         },
                       ),
                       onTap: ()async{
-                        var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => KelompokInputPage(this.widget.session,kodeKelompok: snapshot.data!["data"][index]["KodeKelompok"],) )).then((value) {
+                        var x = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => KelompokInputPage(this.widget.session,this.widget.kodeEvent.toString(),kodeKelompok: snapshot.data!["data"][index]["KodeKelompok"],) )).then((value) {
                           setState(() {});
                         });
                       },

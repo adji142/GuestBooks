@@ -7,7 +7,8 @@ import 'package:guestbook/shared/session.dart';
 class SeatInputPage extends StatefulWidget{
   final Session ? session;
   final String ? kodeSeat;
-  SeatInputPage(this.session,{this.kodeSeat});
+  final String ? kodeEvent;
+  SeatInputPage(this.session,this.kodeEvent,{this.kodeSeat});
 
   @override
   _seatInputState createState() => _seatInputState();
@@ -29,7 +30,8 @@ class _seatInputState extends State<SeatInputPage>{
       return {
         "KodeSeat"      : KodeSeat,
         "RecordOwnerID" : this.widget.session!.RecordOwnerID.toString(),
-        "Kriteria"      : ""
+        "Kriteria"      : "",
+        "EventID"       : this.widget.kodeEvent.toString()
       };
     }
     var temp = await SeatModels(this.widget.session).read(Parameter());
@@ -79,6 +81,7 @@ class _seatInputState extends State<SeatInputPage>{
         "KodeSeat"      : _kodeSeat,
         "NamaSeat"      : _namaSeat,
         "Area"          : _area,
+        "EventID"       : this.widget.kodeEvent.toString(),
         "RecordOwnerID" : this.widget.session!.RecordOwnerID
       };
     }

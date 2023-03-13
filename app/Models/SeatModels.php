@@ -27,6 +27,7 @@ class SeatModels extends Model
                 $store = DB::table($this->table)
                         ->where('KodeSeat', $id)
                         ->where('RecordOwnerID', $RecordOwnerID)
+                        ->where('EventID',$data["EventID"])
                         ->update(array_merge($data, $updated));
                 return $store;
             } catch (\Illuminate\Database\QueryException $ex) {
@@ -37,7 +38,11 @@ class SeatModels extends Model
         } 
         else if ($mode == 'delete') {
             try {
-                $store = DB::table($this->table)->where('KodeSeat', $id)->where('RecordOwnerID',$RecordOwnerID)->delete();
+                $store = DB::table($this->table)
+                ->where('KodeSeat', $id)
+                ->where('RecordOwnerID',$RecordOwnerID)
+                ->where('EventID',$data["EventID"])
+                ->delete();
                 return $store;
             } catch (Exception $e) {
                 if($ex->getCode() === '23000') {
