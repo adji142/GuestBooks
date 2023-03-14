@@ -181,6 +181,7 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -209,6 +210,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
     'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class, 

@@ -69,9 +69,10 @@ Route::group([
     Route::post('/kelompoktamucrud', [KelompokTamuController::class, 'CRUD']);
     Route::post('/kelompoktamuread', [KelompokTamuController::class, 'Read']);
     Route::post('/kelompoktamulookup', [KelompokTamuController::class, 'GetLookup']);
-    // Kelompok Tamu
+    // Tamu
     Route::post('/tamucrud', [TamuController::class, 'CRUD']);
     Route::post('/tamuread', [TamuController::class, 'Read']);
+    Route::post('/downloadqr', [TamuController::class, 'downloadMultiple']);
     // Event Tamu
     Route::post('/eventcrud', [EventController::class, 'CRUD']);
     Route::post('/eventread', [EventController::class, 'Read']);

@@ -288,7 +288,7 @@ class _tamuInputState extends State<TamuInputPage> {
       ),
       onTap: () async {
         Map parameter() {
-          return {"RecordOwnerID": this.widget.session!.RecordOwnerID};
+          return {"RecordOwnerID": this.widget.session!.RecordOwnerID,"EventID": this.widget.KodeEvent.toString()};
         }
 
         var result = await Navigator.push(

@@ -41,7 +41,7 @@ class EventController extends Controller
             $formmode = $request->input('formmode');
             $KodeEvent = $request->input('KodeEvent');
 
-            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent',$KodeEvent)) {
+            if ($formmode == 'add' && $General->isDuplicate($request->input('RecordOwnerID'), 'KodeEvent', $KodeEvent, 'tevent','')) {
                 $return['success'] = false;
                 $return['nError'] = 101;
                 $return['sError'] = "Kode ". $KodeEvent. " Sudah Dipakai! " ;

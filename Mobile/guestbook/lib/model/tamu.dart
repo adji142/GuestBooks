@@ -38,4 +38,17 @@ class TamuModels {
       return error;
     }
   }
+
+  Future<dynamic> downloadQR(Map Parameter) async {
+    try {
+      var url = Uri.parse('${this.url}/downloadqr');
+      final response = await http.post(url, body: Parameter);
+      return json.decode(response.body);
+    } catch (e) {
+      var error = {};
+      error[0] = e.toString();
+
+      return error;
+    }
+  }
 }

@@ -5,10 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use File;
+use ZipArchive;
+use SimpleSoftwareIO\QrCode\Generator;
+
 
 use App\Models\MessageDefault;
 use App\Models\TamuModels;
 use App\Models\GeneralModels;
+use App\Models\EventModels;
 
 class TamuController extends Controller
 {
@@ -159,5 +164,79 @@ class TamuController extends Controller
         $return['data'] = $result->toArray();
 
         return response()->json($return);
+    }
+
+    public function downloadMultiple(Request $request)
+    {
+        $temp = new MessageDefault;
+        $return = $temp->DefaultMessage();
+        $sError = "";
+
+        $EventModels = new EventModels();
+
+        $RecordOwnerID = $request->input('RecordOwnerID');
+        $EventID = $request->input('EventID');
+
+        $event = EventModels::where('KodeEvent',$EventID)->first();
+
+        if ($event) {
+            // var_dump($event['NamaEvent']);
+            $zip = new ZipArchive;
+            $tempName = 'QRDownload/'.$RecordOwnerID.'-'.$EventID.'/';
+            $fileName = $tempName."Event QR Download - ".$event['NamaEvent'].".zip";
+            try {
+                $foldername = public_path($tempName);
+                if(!File::isDirectory($foldername)){
+                    File::makeDirectory($foldername, 0777, true, true);
+                }
+                $response = File::makeDirectory($foldername, $mode = 0777, true, true);
+                // $response = mkdir($foldername);
+
+                // var_dump($response);
+
+                if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+                    $files = File::files(public_path($tempName));
+
+                    $tamu = TamuModels::where('EventID',$EventID)
+                            ->where('RecordOwnerID',$RecordOwnerID)
+                            ->get();
+                    if ($tamu) {
+                        foreach ($tamu as $key) {
+                            $this->DownloadQR($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg',$key->KodeTamu);
+                            // $zip->addFile($value, );
+                        }
+                        foreach ($files as $key => $value) {
+                            // var_dump($value);
+                            $relativeNameInZipFile = basename($value);
+                            $zip->addFile($value, $relativeNameInZipFile);
+                        }
+                        $zip->close();
+                        // return response()->download(public_path($fileName));
+                    }
+                    else{
+                        $sError = "Tidak Ada Tamu";
+                    }
+                }
+            } catch (Exception $e) {
+                $sError = $e->getMessage();
+            }
+        }
+        else{
+            $sError = "Event tidak ditemukan";
+        }
+
+        if ($sError != 'OK') {
+            $return['success'] = false;
+            $return['nError'] = 400;
+            $return['sError'] = $sError;
+        }
+
+        return response()->json($return);
+    }
+    public function DownloadQR($Path, $data)
+    {
+        $qrcode = new Generator;
+        $path = public_path($Path);
+        $qrcode->size(500)->generate($data,$path);
     }
 }

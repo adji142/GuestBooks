@@ -12,11 +12,19 @@ class GeneralModels extends Model
 
     public function isDuplicate($RecordOwnerID, $KeyID, $KeyValue,$Table, $EventID)
     {
-    	$result = DB::table($Table)
+        if ($EventID != '') {
+            $result = DB::table($Table)
                     ->where($KeyID,$KeyValue)
                     ->where('RecordOwnerID', $RecordOwnerID)
                     ->where('EventID', $EventID)
+                    ->count();    
+        }
+        else{
+            $result = DB::table($Table)
+                    ->where($KeyID,$KeyValue)
+                    ->where('RecordOwnerID', $RecordOwnerID)
                     ->count();
+        }
         if ($result > 0) {
             return true;
         }

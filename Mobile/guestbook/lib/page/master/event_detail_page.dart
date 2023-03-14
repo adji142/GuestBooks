@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:guestbook/model/event.dart';
+import 'package:guestbook/model/tamu.dart';
 import 'package:guestbook/page/checkin.dart';
 import 'package:guestbook/page/master/event_input_page.dart';
 import 'package:guestbook/page/master/kelompoktamu_page.dart';
@@ -214,6 +215,30 @@ class _eventDetailState extends State<EventDetailPage> {
                                 )))
                         .then((value) {
                       _fetchData(this.widget.kodeEvent.toString());
+                    });
+                  },
+                ),
+                Container(
+                  width: width * 2,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.download),
+                  label: Text("Download QRCode"),
+                  onPressed: () async {
+                    showLoadingDialog(context, _keyLoader, info: "Processing");
+                    Map Parameter(){
+                      return {
+                        "RecordOwnerID":this.widget.session!.RecordOwnerID.toString(),
+                        "EventID" : this.widget.kodeEvent.toString()
+                      };
+                    }
+                    var x = await TamuModels(this.widget.session).downloadQR(Parameter()).then((value) async{
+                      Navigator.of(context, rootNavigator: false).pop();
+                      await messageBox(
+                          context: context,
+                          title: "Informasi",
+                          message: "Data Berhasil Tersimpan");
+                      Navigator.of(context).pop();
                     });
                   },
                 ),
