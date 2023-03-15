@@ -39,9 +39,9 @@ class TamuModels {
     }
   }
 
-  Future<dynamic> downloadQR(Map Parameter) async {
+  Future<dynamic> generateQR(Map Parameter) async {
     try {
-      var url = Uri.parse('${this.url}/downloadqr');
+      var url = Uri.parse('${this.url}/generateqr');
       final response = await http.post(url, body: Parameter);
       return json.decode(response.body);
     } catch (e) {

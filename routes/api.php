@@ -72,7 +72,8 @@ Route::group([
     // Tamu
     Route::post('/tamucrud', [TamuController::class, 'CRUD']);
     Route::post('/tamuread', [TamuController::class, 'Read']);
-    Route::post('/downloadqr', [TamuController::class, 'downloadMultiple']);
+    Route::post('/generateqr', [TamuController::class, 'downloadMultiple']);
+    Route::get('/downloadqr/{foldername}/{filename}', [TamuController::class, 'getDownload']);
     // Event Tamu
     Route::post('/eventcrud', [EventController::class, 'CRUD']);
     Route::post('/eventread', [EventController::class, 'Read']);

@@ -184,6 +184,9 @@ class TamuController extends Controller
             $zip = new ZipArchive;
             $tempName = 'QRDownload/'.$RecordOwnerID.'-'.$EventID.'/';
             $fileName = $tempName."Event QR Download - ".$event['NamaEvent'].".zip";
+
+            File::delete(public_path($fileName));
+
             try {
                 $foldername = public_path($tempName);
                 if(!File::isDirectory($foldername)){
@@ -195,7 +198,6 @@ class TamuController extends Controller
                 // var_dump($response);
 
                 if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
-                    $files = File::files(public_path($tempName));
 
                     $tamu = TamuModels::where('EventID',$EventID)
                             ->where('RecordOwnerID',$RecordOwnerID)
@@ -205,12 +207,23 @@ class TamuController extends Controller
                             $this->DownloadQR($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg',$key->KodeTamu);
                             // $zip->addFile($value, );
                         }
+                        $files = File::files(public_path($tempName));
+
                         foreach ($files as $key => $value) {
                             // var_dump($value);
                             $relativeNameInZipFile = basename($value);
                             $zip->addFile($value, $relativeNameInZipFile);
+
+                            // File::delete($value);
                         }
                         $zip->close();
+                        
+                        foreach ($tamu as $key) {
+                            // $this->DownloadQR($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg',$key->KodeTamu);
+                            // Storage::disk('public')->delete($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg');
+                            File::delete(public_path($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg'));
+                            // $zip->addFile($value, );
+                        }
                         // return response()->download(public_path($fileName));
                     }
                     else{
@@ -225,9 +238,14 @@ class TamuController extends Controller
             $sError = "Event tidak ditemukan";
         }
 
-        if ($sError != 'OK') {
+        if ($sError != '') {
             $return['success'] = false;
             $return['nError'] = 400;
+            $return['sError'] = $sError;
+        }
+        else{
+            $return['success'] = true;
+            $return['nError'] = 200;
             $return['sError'] = $sError;
         }
 
@@ -238,5 +256,19 @@ class TamuController extends Controller
         $qrcode = new Generator;
         $path = public_path($Path);
         $qrcode->size(500)->generate($data,$path);
+    }
+    public function getDownload(Request $request)
+    {
+        //PDF file is stored under project/public/download/info.pdf
+        $Folder = $request->foldername;
+        $fileName = $request->filename;
+
+        $file= public_path('QRDownload/'.$Folder.'/'.$fileName.'.zip');
+
+        $headers = array(
+          'Content-Type: application/zip',
+        );
+
+        return response()->download($file);
     }
 }

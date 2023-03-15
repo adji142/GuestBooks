@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
@@ -15,6 +18,8 @@ import 'package:guestbook/shared/lookup.dart';
 import 'package:guestbook/shared/session.dart';
 import 'package:intl/date_time_patterns.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class EventDetailPage extends StatefulWidget {
   final Session? session;
@@ -45,6 +50,12 @@ class _eventDetailState extends State<EventDetailPage> {
   List? _dataSet;
 
   bool _eventStarted = false;
+
+  // Download
+  String FileUrl = "";
+  bool downloading = false;
+  var progress = "";
+
   Future<Map> _getData(String KodeEvent) async {
     Map Parameter() {
       return {
@@ -84,6 +95,49 @@ class _eventDetailState extends State<EventDetailPage> {
 
     _eventStarted = _tglEvent.microsecondsSinceEpoch <= nowDate.microsecondsSinceEpoch;
     setState(() => {});
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getTemporaryDirectory();
+
+    return directory.path;
+  }
+
+  Future downloadFile2(Dio dio, String url, String savePath) async {
+    print(url);
+    try {
+      Response response = await dio.get(
+        url,
+        onReceiveProgress: showDownloadProgress,
+        //Received data with List<int>
+        options: Options(
+            responseType: ResponseType.bytes,
+            followRedirects: false,
+            validateStatus: (status) {
+              return status! < 500;
+            }),
+      );
+      print(response.headers);
+      File file = File(savePath);
+      print(file);
+      var raf = file.openSync(mode: FileMode.write);
+      // response.data is List<int> type
+      raf.writeFromSync(response.data);
+      await raf.close();
+      downloading = false;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void showDownloadProgress(received, total) {
+    if (total != -1) {
+      setState(() {
+        downloading = true;
+        progress = (received / total * 100).toStringAsFixed(0) + "%";
+      });
+      print((received / total * 100).toStringAsFixed(0) + "%");
+    }
   }
 
   void initState() {
@@ -232,13 +286,36 @@ class _eventDetailState extends State<EventDetailPage> {
                         "EventID" : this.widget.kodeEvent.toString()
                       };
                     }
-                    var x = await TamuModels(this.widget.session).downloadQR(Parameter()).then((value) async{
-                      Navigator.of(context, rootNavigator: false).pop();
-                      await messageBox(
-                          context: context,
-                          title: "Informasi",
-                          message: "Data Berhasil Tersimpan");
-                      Navigator.of(context).pop();
+                    var x = await TamuModels(this.widget.session).generateQR(Parameter()).then((value) async{
+                      if(value["success"].toString() == "true"){
+                        // "http://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString()
+                        Uri url = Uri.parse("http://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString());
+                        if (!await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        )) {
+                          throw Exception('Could not launch $url');
+                        }
+                        Navigator.of(context, rootNavigator: false).pop();
+                        // Dio dio = Dio();
+
+                        // Directory? directory;
+
+                        // directory = Directory('/storage/emulated/0/Download');
+
+                        // var tempDir = await getExternalStorageDirectory();
+                        // String fullPath = tempDir!.path+"/Event QR Download - " + _NamaEvent.toString() + ".zip" ;
+
+                        // downloadFile2(dio, "http://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString(), fullPath);
+
+                        // if(!downloading){
+                        //   Navigator.of(context, rootNavigator: false).pop();
+                        //   await messageBox(
+                        //     context: context,
+                        //     title: "Informasi",
+                        //     message: "Data Berhasil Tersimpan");
+                        //   }
+                      }
                     });
                   },
                 ),
