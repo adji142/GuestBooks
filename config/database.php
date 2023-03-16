@@ -49,7 +49,7 @@ return [
             'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'u1561869_xdata'),
-            'username' => env('DB_USERNAME', 'u1561869_aissystem'),
+            'username' => env('DB_USERNAME', 'u1561869_root'),
             'password' => env('DB_PASSWORD', 'lagis3nt0s4'),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
