@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use App\Models\MessageDefault;
 use App\Models\GeneralModels;
-use App\Models\BukuTamuModels;
+use App\Models\BukutamuModels;
 
 class BukuTamuController extends Controller
 {
@@ -36,7 +36,7 @@ class BukuTamuController extends Controller
         // }
 
         try {
-            $BukuTamuModels = new BukuTamuModels();
+            $BukuTamuModels = new BukutamuModels();
             $General = new GeneralModels();
             $formmode = $request->input('formmode');
             $RowID = $request->input('RowID');
