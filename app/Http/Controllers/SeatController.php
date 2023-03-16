@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Facade;
 
 use App\Models\MessageDefault;
 use App\Models\SeatModels;
@@ -156,6 +157,7 @@ class SeatController extends Controller
 
     public function TestDatabase(Request $request)
     {
+        echo env('DB_HOST', 'Laravel');
         try {
             \DB::connection()->getPDO();
             echo \DB::connection()->getDatabaseName();
