@@ -8,15 +8,16 @@ class AuthModels{
   String ? url;
 
   AuthModels(this.sess) {
-    url="http://${sess!.server}/auth";
+    url="https://${sess!.server}/auth";
   }
 
   Future<Map> login(Map Parameter) async{
     try {
-      // print(Parameter);
+      print(Parameter);
       // print(this.url);
       var url = Uri.parse('${this.url}/login');
       final response = await http.post(url, body: Parameter);
+      print(json.decode(response.body));
       return json.decode(response.body);
     } catch (e) {
       var error = {};

@@ -8,7 +8,7 @@ class Profinsi{
   String ? url;
 
   Profinsi(this.sess) {
-    url="http://${sess!.server}/dem";
+    url="https://${sess!.server}/dem";
   }
 
   Future<List> getLookup({String search=""}) async {

@@ -8,13 +8,14 @@ class BukuTamuModels {
   String? url;
 
   BukuTamuModels(this.sess) {
-    url = "http://${sess!.server}/trx";
+    url = "https://${sess!.server}/trx";
   }
 
   Future<Map> crud(Map Parameter) async {
     try {
       var url = Uri.parse('${this.url}/bukutamu');
       final response = await http.post(url, body: Parameter);
+      print(json.decode(response.body));
       return json.decode(response.body);
     } catch (e) {
       var error = {};

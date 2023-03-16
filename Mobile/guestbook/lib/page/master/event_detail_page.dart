@@ -289,7 +289,7 @@ class _eventDetailState extends State<EventDetailPage> {
                     var x = await TamuModels(this.widget.session).generateQR(Parameter()).then((value) async{
                       if(value["success"].toString() == "true"){
                         // "http://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString()
-                        Uri url = Uri.parse("http://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString());
+                        Uri url = Uri.parse("https://"+this.widget.session!.server+"/mstr/downloadqr/"+ this.widget.session!.RecordOwnerID +"-"+_KodeEvent.toString()+"/Event QR Download - "+_NamaEvent.toString());
                         if (!await launchUrl(
                           url,
                           mode: LaunchMode.externalApplication,

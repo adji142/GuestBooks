@@ -90,37 +90,40 @@ class _CheckinPageState extends State<CheckinPage> {
                       };
                     }
 
-                    showLoadingDialog(context, _keyLoader, info: "Processing");
+                    if(_kodeTamu != "-1" || _kodeTamu == "Fail Scan"){
+                      showLoadingDialog(context, _keyLoader, info: "Processing");
 
-                    var tempTamu = new TamuModels(this.widget.session)
-                        .read(Parameter())
-                        .then((value) => {
-                              if (value["data"].length > 0)
-                                {
-                                  _checkinProcedure(
-                                      context: context,
-                                      kodeTamu: _kodeTamu.toString(),
-                                      jumlahTamu: int.parse(value["data"][0]
-                                              ["JumlahUndangan"]
-                                          .toString()),
-                                      alamat: value["data"][0]["AlamatTamu"]
-                                          .toString(),
-                                      rowID: value["data"][0]["RowID"],
-                                      tamuHadir: int.parse(value["data"][0]
-                                              ["TamuHadir"]
-                                          .toString()),
-                                      namaTamu: value["data"][0]["NamaTamu"])
-                                }
-                              else
-                                {
-                                  Navigator.of(context, rootNavigator: false)
-                                      .pop(),
-                                  messageBox(
-                                      context: context,
-                                      title: "Error",
-                                      message: "Data Tidak ditmukan")
-                                }
-                            });
+                      var tempTamu = new TamuModels(this.widget.session)
+                          .read(Parameter())
+                          .then((value) => {
+                                if (value["data"].length > 0)
+                                  {
+                                    _checkinProcedure(
+                                        context: context,
+                                        kodeTamu: _kodeTamu.toString(),
+                                        jumlahTamu: int.parse(value["data"][0]
+                                                ["JumlahUndangan"]
+                                            .toString()),
+                                        alamat: value["data"][0]["AlamatTamu"]
+                                            .toString(),
+                                        rowID: value["data"][0]["RowID"],
+                                        tamuHadir: int.parse(value["data"][0]
+                                                ["TamuHadir"]
+                                            .toString()),
+                                        namaTamu: value["data"][0]["NamaTamu"])
+                                  }
+                                else
+                                  {
+                                    Navigator.of(context, rootNavigator: false)
+                                        .pop(),
+                                    messageBox(
+                                        context: context,
+                                        title: "Error",
+                                        message: "Data Tidak ditmukan")
+                                  }
+                              });
+                    }
+                      
 
                     // await Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventInputPage(this.widget.session,kodeEvent: "",) ))
                   })),
@@ -131,16 +134,32 @@ class _CheckinPageState extends State<CheckinPage> {
                 heroTag: "hero2",
                 backgroundColor: Colors.red,
                 child: Icon(Icons.add),
-                onPressed: () {
-                  _checkinProcedure(
-                      context: context,
-                      kodeTamu: "",
-                      namaTamu: "",
-                      alamat: "",
-                      isManual: true,
-                      jumlahTamu: 0,
-                      rowID: 0,
-                      tamuHadir: 0);
+                onPressed: () async {
+                  Map oParamChange() {
+                    return {
+                      'RecordOwnerID': this.widget.session!.RecordOwnerID,
+                      'EventID': this.widget.KodeEvent.toString()
+                    };
+                  }
+
+                  BukuTamuModels oSave =
+                      new BukuTamuModels(this.widget.session);
+
+                  var x = await oSave.getNumber(oParamChange()).then(
+                    (value) {
+                      var kodeTamu =
+                          "UNK" + value["data"][0]["NextNumber"].toString();
+                      _checkinProcedure(
+                          context: context,
+                          kodeTamu: kodeTamu,
+                          namaTamu: "",
+                          alamat: "",
+                          isManual: true,
+                          jumlahTamu: 0,
+                          rowID: 0,
+                          tamuHadir: 0);
+                    },
+                  );
                 },
               ))
         ],
@@ -322,6 +341,7 @@ class _CheckinPageState extends State<CheckinPage> {
       _scannedBarcode = "";
       Navigator.of(context, rootNavigator: false).pop();
     }
+    print(kodeTamu);
     // Navigator.of(context, rootNavigator: false).pop();
 
     TextEditingController _JumlahTamu = TextEditingController();
@@ -420,25 +440,6 @@ class _CheckinPageState extends State<CheckinPage> {
                 showLoadingDialog(context, _keyLoader, info: "Processing");
 
                 var oSave = new BukuTamuModels(this.widget.session);
-
-                Map oParamChange() {
-                  return {
-                    'RecordOwnerID': this.widget.session!.RecordOwnerID,
-                    'EventID': this.widget.KodeEvent.toString()
-                  };
-                }
-
-                // kodeTamu = kodeTamu == "" && isManual
-                //     ? "UNK" + oSave.getNumber(oParamChange()).toString()
-                //     : kodeTamu;
-
-                // String _nextNumber = "";
-                var x = await oSave.getNumber(oParamChange()).then((value) {
-                  kodeTamu = "UNK"+value["data"][0]["NextNumber"].toString();
-                  setState(() {
-                    
-                  });
-                },);
 
                 Map oParam() {
                   return {

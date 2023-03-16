@@ -190,7 +190,7 @@ class _IndexState extends State<Index> {
                           }
 
                           logindata.login(Parameter()).then((value) {
-                            // print(value);
+                            print(value);
                             if (value["success"].toString() == "true") {
                               print("Simpan Object, Masuk Halaman Selanjutnya");
                               // print(value);

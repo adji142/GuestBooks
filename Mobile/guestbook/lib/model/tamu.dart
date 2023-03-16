@@ -8,7 +8,7 @@ class TamuModels {
   String? url;
 
   TamuModels(this.sess) {
-    url = "http://${sess!.server}/mstr";
+    url = "https://${sess!.server}/mstr";
   }
 
   Future<Map> read(Map Parameter) async {

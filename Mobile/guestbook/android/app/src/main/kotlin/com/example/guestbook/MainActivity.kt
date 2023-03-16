@@ -1,4 +1,4 @@
-package com.example.guestbook
+package ais.app.guestbook
 
 import io.flutter.embedding.android.FlutterActivity
 
