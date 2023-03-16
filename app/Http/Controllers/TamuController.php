@@ -121,7 +121,7 @@ class TamuController extends Controller
 
         if ($KodeTamu != '') {
             $result = DB::table('ttamu')
-                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir"))
+                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,COALESCE(bukutamu.JumlahUndangan,0) AS TamuHadir"))
                 // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->leftjoin('tkelompoktamu',function ($join)
                 {
@@ -142,7 +142,7 @@ class TamuController extends Controller
         }
         else{
             $result = DB::table('ttamu')
-                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,bukutamu.JumlahUndangan AS TamuHadir"))
+                ->select(DB::raw("ttamu.KodeTamu,ttamu.NamaTamu,ttamu.JumlahUndangan,ttamu.AlamatTamu,COALESCE(ttamu.KelompokTamu, '') AS KelompokTamu,COALESCE(tkelompoktamu.NamaKelompok, 'Unknown') AS NamaKelompok, COALESCE(bukutamu.RowID,0) RowID,COALESCE(bukutamu.JumlahUndangan,0) AS TamuHadir"))
                 // ->leftjoin('tkelompoktamu','ttamu.KelompokTamu','tkelompoktamu.KodeKelompok')
                 ->leftjoin('tkelompoktamu',function ($join)
                 {
