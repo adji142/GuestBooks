@@ -153,4 +153,14 @@ class SeatController extends Controller
 
         return response()->json($return);
     }
+
+    public function TestDatabase(Request $request)
+    {
+        try {
+            \DB::connection()->getPDO();
+            echo \DB::connection()->getDatabaseName();
+            } catch (\Exception $e) {
+            echo 'None';
+        }
+    }
 }

@@ -61,6 +61,7 @@ Route::group([
 Route::group([
     'prefix' => 'mstr',
 ],function ($router) {
+    Route::post('/test', [SeatController::class, 'TestDatabase']);
     // Seat
     Route::post('/seatcrud', [SeatController::class, 'CRUD']);
     Route::post('/seatread', [SeatController::class, 'Read']);
