@@ -42,7 +42,6 @@ class BukuTamuController extends Controller
             $RowID = $request->input('RowID');
 
             $data = [
-                'RowID'         	=> $RowID,
                 'KodeTamu'         	=> $request->input('KodeTamu'),
                 'NamaTamu'          => $request->input('NamaTamu'),
                 'JumlahUndangan'    => $request->input('JumlahUndangan'),
