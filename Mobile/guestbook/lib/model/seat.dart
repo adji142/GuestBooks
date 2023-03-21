@@ -8,7 +8,7 @@ class SeatModels{
   String ? url;
 
   SeatModels(this.sess) {
-    url="https://${sess!.server}/mstr";
+    url="${sess!.server}/mstr";
   }
 
   Future<Map> read(Map Parameter) async{

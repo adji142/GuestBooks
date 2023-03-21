@@ -132,7 +132,12 @@ class KelompokTamuController extends Controller
         if ($KodeKelompok != '') {
             $result = DB::table('tkelompoktamu as a')
                 ->select(DB::raw('a.KodeKelompok, a.NamaKelompok, a.KodeSeat,tseat.NamaSeat'))
-                ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
+                ->leftjoin('tseat',function ($join)
+                {
+                    $join->on('a.KodeSeat','=','tseat.KodeSeat');
+                    $join->on('a.EventID','=','tseat.EventID');
+                })
+                // ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
                 ->where('a.RecordOwnerID',$RecordOwnerID)
                 ->where('a.KodeKelompok',$KodeKelompok)
                 ->where('a.EventID',$EventID)
@@ -142,7 +147,12 @@ class KelompokTamuController extends Controller
         else{
             $result = DB::table('tkelompoktamu as a')
                 ->select(DB::raw('a.KodeKelompok, a.NamaKelompok, a.KodeSeat,tseat.NamaSeat'))
-                ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
+                // ->leftjoin('tseat','a.KodeSeat','tseat.KodeSeat')
+                ->leftjoin('tseat',function ($join)
+                {
+                    $join->on('a.KodeSeat','=','tseat.KodeSeat');
+                    $join->on('a.EventID','=','tseat.EventID');
+                })
                 ->where('a.RecordOwnerID',$RecordOwnerID)
                 ->where('a.EventID',$EventID)
                 ->where('a.NamaKelompok','LIKE','%'.$Kriteria.'%')

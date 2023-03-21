@@ -8,7 +8,7 @@ class AuthModels{
   String ? url;
 
   AuthModels(this.sess) {
-    url="https://${sess!.server}/auth";
+    url="${sess!.server}/auth";
   }
 
   Future<Map> login(Map Parameter) async{

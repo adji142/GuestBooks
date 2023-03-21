@@ -8,7 +8,7 @@ class BukuTamuModels {
   String? url;
 
   BukuTamuModels(this.sess) {
-    url = "https://${sess!.server}/trx";
+    url = "${sess!.server}/trx";
   }
 
   Future<Map> crud(Map Parameter) async {

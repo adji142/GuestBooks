@@ -85,15 +85,11 @@ class SeatController extends Controller
             $return['success'] = true;
             $return['nError'] = 200;
             $return['sError'] = "";
-
-            DB::commit();
         }
         else{
             $return['success'] = false;
             $return['nError'] = 400;
             $return['sError'] = $sError;
-
-            DB::rollback();
         }
 
         return response()->json($return);

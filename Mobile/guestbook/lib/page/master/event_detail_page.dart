@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:guestbook/model/event.dart';
 import 'package:guestbook/model/tamu.dart';
@@ -10,13 +9,9 @@ import 'package:guestbook/page/checkin.dart';
 import 'package:guestbook/page/master/event_input_page.dart';
 import 'package:guestbook/page/master/kelompoktamu_page.dart';
 import 'package:guestbook/page/master/seat_page.dart';
-import 'package:guestbook/page/master/tamu_input_page.dart';
 import 'package:guestbook/page/master/tamu_page.dart';
 import 'package:guestbook/shared/dialog.dart';
-import 'package:guestbook/shared/inputdata.dart';
-import 'package:guestbook/shared/lookup.dart';
 import 'package:guestbook/shared/session.dart';
-import 'package:intl/date_time_patterns.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -317,6 +312,16 @@ class _eventDetailState extends State<EventDetailPage> {
                         //   }
                       }
                     });
+                  },
+                ),
+                Container(
+                  width: width * 2,
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.attach_money_rounded),
+                  label: Text("Keuangan"),
+                  onPressed: () async {
+                    // Navigator.push(context,MaterialPageRoute(builder: (context) => KelompokKeuangan(this.widget.session,this.widget.kodeEvent.toString())));
                   },
                 ),
               ],

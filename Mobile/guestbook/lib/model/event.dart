@@ -8,7 +8,7 @@ class EventModels {
   String? url;
 
   EventModels(this.sess){
-    url="https://${sess!.server}/mstr";
+    url="${sess!.server}/mstr";
   }
 
   Future<Map> read(Map Parameter) async{
