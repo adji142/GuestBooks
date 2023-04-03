@@ -204,7 +204,7 @@ class TamuController extends Controller
                             ->get();
                     if ($tamu) {
                         foreach ($tamu as $key) {
-                            $this->DownloadQR($tempName.'/'.$key->KodeTamu.' - '.$key->NamaTamu.'.svg',$key->KodeTamu);
+                            $this->DownloadQR($tempName.'/'.$key->KodeTamu.' - '.str_replace("/", '', $key->NamaTamu).'.svg',$key->KodeTamu);
                             // $zip->addFile($value, );
                         }
                         $files = File::files(public_path($tempName));
